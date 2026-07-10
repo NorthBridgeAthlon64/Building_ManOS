@@ -1,0 +1,35 @@
+java.io包
+
+输入输出
+
+InputStream, OutputStream,
+Reader, Writer,
+
+FileInputStream, FileOutputStream,
+ByteArrayInputStream, ByteArrayOutputStream,
+
+FilterInputStream, FilterInputStream,
+DataInputStream, DataOutputStream,
+DataInput, DataOutput
+BufferedInputStream, BufferedOutputStream,
+
+ObjectInputStream, ObjectOutputStream,
+java.io.Serializable
+ObjectInput, ObjectOutput
+
+character encoding
+
+FileReader, FileWriter,
+CharArrayReader, CharArrayWriter
+StringReader, StringWriter
+BufferedReader, BufferedWriter,
+LineNumberReader,
+InputStreamReader, OutputStreamWriter,
+
+PrintStream, PrintWriter
+
+java.util.Properties及.properties配置文件
+
+java.io.File
+java.io.RandomAccessFile
+

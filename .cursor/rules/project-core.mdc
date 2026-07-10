@@ -1,0 +1,38 @@
+---
+description: Building ManOS 项目总则（课程约束、分层、技术栈）
+alwaysApply: true
+---
+
+# Building ManOS 项目总则
+
+JAVA 高级编程大作业：房地产公司房屋销售管理系统。
+
+## 硬性约束
+
+- 仅 **控制台程序**（`cli` 包），禁止 Swing/JavaFX/Web/Android
+- 必须使用 **MySQL + JDBC**（`dao` 层），禁止仅用文件当主存储
+- 必须 **分层架构**，禁止跨层调用
+
+## 分层与包名
+
+包名：`com.building.manos`
+
+| 层 | 包 | 职责 |
+|----|-----|------|
+| 表示层 | `cli` | 菜单、终端 IO，只调 service |
+| 业务层 | `service` | 业务规则、折扣、流程，只调 dao |
+| 数据访问层 | `dao` | JDBC + PreparedStatement |
+| 实体 | `model` | 对应数据库表 |
+| 配置 | `config` | DBConfig |
+| 策略 | `discount` | DiscountStrategy 实现 |
+
+## 调用链
+
+`cli` → `service` → `dao` → MySQL
+
+## 详细文档
+
+- 计划：`项目计划.md`
+- **Java 框架**：`docs/design/Java技术框架.md`
+- **数据库**：`docs/design/数据库设计.md`
+- 注释：`docs/design/代码注释规范.md`

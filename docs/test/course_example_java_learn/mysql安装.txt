@@ -1,0 +1,161 @@
+mysql 9.4.0 安装过程（下载的是zip文件）mysql-9.4.0-winx64.zip
+
+1. 解压mysql-9.4.0-winx64.zip文件，老师解压到D:\mysql-9.4.0-winx64文件夹下了。
+
+2. 创建数据库文件夹D:\mysql-9.4.0-winx64\data
+
+3. 用文本编辑器创建my.ini文件，放在D:\mysql-9.4.0-winx64文件夹下。
+	！！！注意是斜杠，如果是反斜杠，windows系统需要写两个反斜杠，
+
+	basedir=D:\\mysql-9.4.0-winx64
+	
+	my.ini文件内容如下(同学们可以复制粘贴，然后修改~):
+	[mysqld]
+		# set basedir to your installation path
+		basedir=D:/mysql-9.4.0-winx64
+		# set datadir to the location of your data directory
+		datadir=D:/mysql-9.4.0-winx64/data
+
+	
+4. 初始化mysql系统数据库，在命令提示符下执行如下命令。
+	D:\mysql-9.4.0-winx64\bin\mysqld.exe --initialize --user=mysql
+	
+5. 在文件夹D:\mysql-9.4.0-winx64\data下，你会发现生成了很多文件，找到以.err后缀结尾的文件
+    这个文件是服务器错误日志文件，里面有root（超级用户）的初始密码，找到如下内容
+	A temporary password is generated for root@localhost: pl2Fj2,.%fyT
+	这就是初始化过程中为root用户产生的随机密码pl2Fj2,.%fyT
+	当然，你安装mysql生成的root用户密码可不是这个字符串pl2Fj2,.%fyT
+	
+6. 将D:\mysql-9.4.0-winx64\bin添加到系统Path环境变量中，这样执行mysql的命令方便一些。不需要每次执行mysql的命令都有在D:\mysql-9.4.0-winx64\bin文件夹下。
+	在D:\mysql-9.4.0-winx64\bin文件夹下，你可以看到
+	mysql.exe(mysql的命令行客户端）
+	mysqld.exe(启动mysql数据库服务器的命令)
+	mysqladmin.exe(mysql服务器管理工具命令)
+	mysqlshow.exe(显示mysql数据库，表，字段等信息命令)
+
+7. 启动mysql服务器，在命令提示符下，执行：mysqld.exe &
+
+8. 修改root用户的密码，再次启动一个命令提示符，执行：mysql -u root -p
+	然后输入第5步的随机密码。进入到mysql之后输入（root用户的密码改为root12345,很容易记住了~）：
+	alter user 'root'@'localhost' identified by 'root12345';
+	你可以复制粘贴这个字符串到mysql.exe命令行中。不要键盘输入，防止敲错。
+	
+9. 退出mysql，在mysql>下输入exit; 然后回车
+
+10. 重新进入到mysql命令下，执行：mysql.exe -u root -p
+	(.exe可以不输入），这样的形式也可以：mysql -u root -p
+	输入root用户的新密码，root12345，就可以进入到mysql 
+	测试一下sql语句：你可以输入, mysql>select now() a;
+	如果看到查询结果（当前时间），证明安装基本上成功了。
+	输入 exit; 退出mysql
+	
+11. 关闭mysql数据库，有两种方式可以关闭数据库。
+	1) 在命令提示符下执行如下命令: mysqladmin -u root -p shutdown 
+		然后输入root用户的密码，root12345, 然后可以看到mysqld.exe进程被终止了。
+	2) 以root用户进入到mysql命令提示符下，
+		mysql -u root -p 
+		然后输入shutdown;命令就可以了，shutdown命令需要权限的，非root用户如果没有权限执行shutdown命令会报错。
+		mysql>shutdown;
+		
+12. 创建普通用户，例如java用户，密码是java12345
+	当然，mysql数据库需要启动。
+	进入到mysql系统数据库，在命令提示符下输入：
+	mysql -u root -p mysql
+	输入root用户的密码，进入到mysql命令行，执行：
+	mysql>create user 'java'@'localhost' identified by 'java12345';
+	
+	然后是对java这个普通用户进行授权
+	mysql>grant all on *.* to 'java'@'localhost' with grant option;
+	
+	然后退出mysql命令行
+	mysql>exit;
+	
+	重新以java这个用户进入到mysql命令行，在命令提示符下输入:
+	mysql -u java -p mysql
+	按照提示输入java这个用户的密码：java12345之后，就可以进入到mysql命令行客户端了
+	
+	输入：select user(); 可以看到当前的用户是java, 进入的终端是localhost
+	mysql>select user();
+	
+	
+13. 创建数据库，创建数据库之前，可以使用命令mysqlshow.exe来查看当前数据库都有哪些。
+	启动mysql数据库，在命令提示符下，mysqld.exe & 回车
+	查看mysql数据库，在命令提示符下，mysqlshow.exe -u root -p
+	使用root用户或者java用户进入到mysql命令行客户端
+	mysql.exe -u root -p mysql
+	
+	然后执行创建数据库
+	mysql>create database assignment;
+	
+	如果创建成功，查看数据库
+	mysql>show databases;
+	
+	切换数据库（使用某个数据库）
+	mysql>use assignment;
+	
+	查看该数据库下的表
+	mysql>show tables;
+
+14. 创建表
+	使用java用户进入到assignment数据库, 命令提示符下，输入
+	mysql -u java -p assignment
+	mysql>create table tbStudent(id varchar(20) not null, name varchar(50) not null, 
+		gender tinyint(1) not null, class  varchar(20), 
+		mobile char(11), email varchar(50), primary key(id));
+	
+	插入两条测试数据
+	mysql>insert into tbStudent(id,name,gender,class,mobile,email) 
+	      values('201992139','张伟',1,'网物1901','18640857288','jgh@dlut.edu.cn');
+		  
+	mysql>insert into tbStudent(id,name,gender,class,mobile,email) 
+	      values('201992138','周美丽',0,'网物1902','18640857299','zml@163.com');
+
+	执行查询语句
+	select * from tbStudent;
+	
+15. 数据导入|导出，使用mysqldump.exe，以SQL语句的形式导出数据，在命令提示符下
+	1) 导出所有数据库的数据
+		mysqldump.exe -u root -p --all-databases > all.sql
+	2) 导出某个数据库的数据
+		mysqldump.exe -u root -p assignment > assignment.sql
+	3) 导入SQL形式的数据
+		mysql.exe -u java -p assignment < assignment.sql
+	4) 导入SQL形式的数据，进入到mysql命令行客户端
+		mysql.exe -u java -p assignment
+		然后执行
+		mysql>source assignment.sql
+		
+		
+16. 编写jsp程序测试jdbc驱动程序
+	在eclipse下新建web项目，将mysql-connector-java-8.0.30.jar复制到/WEB-INF/lib文件夹下
+	然后编写jdbctest.jsp，内容如下：
+	<%@ page language="java" contentType="text/html; charset=utf-8"
+		import="java.sql.*" pageEncoding="utf-8"%>
+	<!DOCTYPE html>
+	<html>
+	<head>
+	<meta charset="utf-8">
+	<title>jdbc test</title>
+	</head>
+	<body>
+
+	<%
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/assignment", "java", "java12345");
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("select * from tbStudent");
+		while (rs.next()) {
+			out.print(rs.getString("name") + "<br>");
+		}
+		rs.close();
+		stmt.close();
+		con.close();
+	%>
+	</body>
+	</html>
+	
+	然后运行jdbctest.jsp(右键点击该文件，然后，run as -> run on server)
+	
+17. 然后是作业，在Web应用的/META-INF文件夹下配置context.xml文件，配置数据源....
+	同学们自己去做吧，我不讲了。
+	

@@ -1,0 +1,64 @@
+多线程编程
+
+线程类Thread
+
+线程对象和线程任务对象之间的调用接口：Runnable
+
+线程类的构造函数，创建线程。
+
+创建线程的两种常见方法
+1. 继承Thread类，覆盖public void run()函数。
+2. 定义线程任务类，实现Runnable接口，通过Thread类的构造
+	函数传入线程任务对象。
+
+public class MyThread extends Thread {
+
+	public void run() {
+		// 线程任务代码
+	}
+}
+
+
+public class MyTask implements Runnable {
+	public void run() {
+		// 线程任务代码
+	}
+}
+
+public class ThreadTest {
+	public static void main(String[] args) {
+		Thread t1 = new MyThread();
+		Thread t2 = new Thread(new MyTask());
+		t1.start();	t2.start();
+	}
+}
+
+线程状态及控制
+
+线程同步，对象锁。synchronized关键字。
+
+线程阻塞，Object类的wait函数，notify函数，notifyAll函数。
+
+需要进一步理解什么是接口。
+接口是软件功能的划分，
+接口是对象展示给其他对象的调用声明，
+接口是抽象的，
+接口和抽象类完全不同。
+接口可以是多实现的，接口继承也可以是多继承的。
+类继承只能是单一继承。
+
+Thread类是JavaSE平台定义的类，提供线程创建运行调度等功能。
+Thread类如何执行应用程序中的线程任务代码？
+	1. 静态的声明，线程任务对象是什么类型？Runnable接口类型
+	2. 动态的调用，线程任务对象的引用在哪里？构造函数传入。
+
+线程池， ThreadPoolExecutor ， （Executors， 不建议使用) 
+java.util.concurrent包，线程调度，并发操作
+
+匿名类及Lambda表达式，简洁的类声明，简洁的函数声明。
+函数式接口定义：一个接口有且只有一个抽象方法。
+
+
+
+
+

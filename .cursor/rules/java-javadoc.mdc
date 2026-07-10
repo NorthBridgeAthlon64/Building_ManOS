@@ -1,0 +1,46 @@
+---
+description: JavaDoc 注释规范（标准标签）
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# JavaDoc 规范
+
+每个 **public 类/接口** 必须有类注释；每个 **public 方法** 必须有方法注释。
+
+## 类注释模板
+
+```java
+/**
+ * 一句话职责。
+ * <p>可选：调用关系，{@link XxxDao}。</p>
+ *
+ * @author 张三
+ * @since 2026-07-15
+ * @see RelatedClass
+ */
+```
+
+## 方法注释
+
+- 首句：做什么
+- 有流程/公式：写在 `<p>` 内（1 段即可）
+- 必须：`@param`、`@return`；有异常则 `@throws`
+
+```java
+/**
+ * 删除楼盘，下属仍有房屋时拒绝。
+ * <p>先 count 房屋，为 0 再 delete。</p>
+ *
+ * @param buildingId 楼盘编号
+ * @return 删除成功 true
+ * @throws IllegalStateException 仍有房屋时
+ */
+```
+
+## 禁止
+
+- 无标签的裸 `// 删除楼盘` 代替 JavaDoc
+- 自定义 `【职责】` 块（用标准 `@author` `@param` 等）
+
+完整说明见 `docs/design/代码注释规范.md`。
