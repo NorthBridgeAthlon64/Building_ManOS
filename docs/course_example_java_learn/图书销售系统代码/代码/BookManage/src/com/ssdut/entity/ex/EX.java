@@ -1,15 +1,15 @@
 package com.ssdut.entity.ex;
 
 public abstract class EX {
-	private double price;//¼Û¸ñ
-	private String ex_name;//¸½ÔùÆ·Ãû
+	private double price;//ä»·æ ¼
+	private String ex_name;//é™„èµ å“å
 
 	/**
-	 * ¸½ÔùÆ·¼Û¸ñ¼ÆËã
+	 * é™„èµ å“ä»·æ ¼è®¡ç®—
 	 * @return
 	 */
 	public double cost() {
-		System.out.print("¸½ÔùÆ·£º");
+		System.out.print("é™„èµ å“ï¼š");
 		System.out.println(ex_name + ":" + price);
 		System.out.println("--------------");
 		return price;

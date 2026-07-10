@@ -1,8 +1,8 @@
 package entity;
 
 public class Student {
-	private String name; // 学员姓名
-	private String sex; // 学员性别
+	private String name; // 瀛﹀憳濮撳悕
+	private String sex; // 瀛﹀憳鎬у埆
 
 	public Student() {
 	}

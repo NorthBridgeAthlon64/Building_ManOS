@@ -1,12 +1,12 @@
 import java.io.*;
 
-public class Copy1 /* 类名暂未给出 */{
+public class Copy1 /* 绫诲悕鏆傛湭缁欏嚭 */{
 	public static void main(String[] args) {
 		try {
 			FileInputStream fis = new FileInputStream(args[0]);
 			FileOutputStream fos = new FileOutputStream(args[1]);
 			int c = 0;
-			while ((c = fis.read()) != -1) { // 从文件中读一个字节，直到文件结束
+			while ((c = fis.read()) != -1) { // 浠庢枃浠朵腑璇讳竴涓瓧鑺傦紝鐩村埌鏂囦欢缁撴潫
 				fos.write(c);
 			}
 			fis.close();

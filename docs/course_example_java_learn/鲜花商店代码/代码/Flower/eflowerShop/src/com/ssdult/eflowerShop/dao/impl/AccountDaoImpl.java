@@ -11,14 +11,14 @@ import com.ssdult.eflowerShop.dao.AccountDao;
 import com.ssdult.eflowerShop.dao.BaseDao;
 import com.ssdult.eflowerShop.entity.Account;
 /**
- * ÏÊ»¨ÉÌµêÕË»§ĞÅÏ¢Êı¾İ¿â²Ù×÷Àà
+ * é²œèŠ±å•†åº—è´¦æˆ·ä¿¡æ¯æ•°æ®åº“æ“ä½œç±»
  */
 public class AccountDaoImpl extends BaseDao implements AccountDao {
-	private Connection conn = null; // ±£´æÊı¾İ¿âÁ¬½Ó
+	private Connection conn = null; // ä¿å­˜æ•°æ®åº“è¿æ¥
 
-	private PreparedStatement pstmt = null; // ÓÃÓÚÖ´ĞĞSQLÓï¾ä
+	private PreparedStatement pstmt = null; // ç”¨äºæ‰§è¡ŒSQLè¯­å¥
 
-	private ResultSet rs = null; // ÓÃ»§±£´æ²éÑ¯½á¹û¼¯
+	private ResultSet rs = null; // ç”¨æˆ·ä¿å­˜æŸ¥è¯¢ç»“æœé›†
 	@Override
 	public int updateAccount(String sql, Object[] param) {
 		int count = super.executeSQL(sql, param);
@@ -29,24 +29,24 @@ public class AccountDaoImpl extends BaseDao implements AccountDao {
 	public List<Account> getFlowerStoreAccount(String sql, String[] param) {
 		List<Account> accountList = new ArrayList<Account>();
 		try {
-			conn = getConn(); // µÃµ½Êı¾İ¿âÁ¬½Ó
-			pstmt = conn.prepareStatement(sql); // µÃµ½PreparedStatement¶ÔÏó
+			conn = getConn(); // å¾—åˆ°æ•°æ®åº“è¿æ¥
+			pstmt = conn.prepareStatement(sql); // å¾—åˆ°PreparedStatementå¯¹è±¡
 			if (param != null) {
 				for (int i = 0; i < param.length; i++) {
-					pstmt.setString(i + 1, param[i]); // ÎªÔ¤±àÒësqlÉèÖÃ²ÎÊı
+					pstmt.setString(i + 1, param[i]); // ä¸ºé¢„ç¼–è¯‘sqlè®¾ç½®å‚æ•°
 				}
 			}
-			rs = pstmt.executeQuery(); // Ö´ĞĞSQLÓï¾ä
+			rs = pstmt.executeQuery(); // æ‰§è¡ŒSQLè¯­å¥
 			Account account = null;
 			while (rs.next()) {
 				account = new Account();
 				account.setId(rs.getInt(1));
-				account.setDealType(rs.getInt(2));//ÕË»§½»Ò×ÀàĞÍ
-				account.setFlowerId(rs.getInt(3));//ÏÊ»¨±àºÅ
-				account.setSellerId(rs.getInt(4));//ÂòÈëÕßid
-				account.setBuyerId(rs.getInt(5));//¹ºÂòÕßid
-				account.setPrice(rs.getDouble(6));//½»Ò×¼Û¸ñ
-				account.setDealTime(rs.getDate(7));//½»Ò×ÈÕÆÚ
+				account.setDealType(rs.getInt(2));//è´¦æˆ·äº¤æ˜“ç±»å‹
+				account.setFlowerId(rs.getInt(3));//é²œèŠ±ç¼–å·
+				account.setSellerId(rs.getInt(4));//ä¹°å…¥è€…id
+				account.setBuyerId(rs.getInt(5));//è´­ä¹°è€…id
+				account.setPrice(rs.getDouble(6));//äº¤æ˜“ä»·æ ¼
+				account.setDealTime(rs.getDate(7));//äº¤æ˜“æ—¥æœŸ
 				accountList.add(account);
 			}
 		} catch (SQLException e) {

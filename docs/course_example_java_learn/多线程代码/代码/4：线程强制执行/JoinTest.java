@@ -12,7 +12,7 @@ public class JoinTest extends Thread {
    public static void main(String[] args) {
      for(int i = 0;i<10;i++){
         if(i==5){
-          JoinTest tempjt = new JoinTest("°ëÂ·¼ÓÈëµÄÏß³Ì");
+          JoinTest tempjt = new JoinTest("åŠè·¯åŠ å…¥çš„çº¿ç¨‹");
           try {
              tempjt.start();
              tempjt.join();

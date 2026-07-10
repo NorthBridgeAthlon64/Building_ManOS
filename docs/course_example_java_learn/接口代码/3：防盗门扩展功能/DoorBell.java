@@ -1,9 +1,9 @@
 package cn.door;
 
 /**
- * 门铃接口 
+ * 闂ㄩ搩鎺ュ彛 
  *
  */
 public interface DoorBell {
-	void takePictures();  //拍照存档功能
+	void takePictures();  //鎷嶇収瀛樻。鍔熻兘
 }

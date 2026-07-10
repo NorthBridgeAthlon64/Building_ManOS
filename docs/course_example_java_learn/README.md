@@ -2,6 +2,9 @@
 
 本目录为课程上学习的 Java 知识点与示例，**供 Building ManOS 技术组参考**。
 
+> **编码**：已全部转换为 **UTF-8**。若新增文件来自课堂（GBK/GB2312），可运行：
+> `python scripts/convert-course-examples-to-utf8.py`
+
 ## 与本项目的对照文档
 
 👉 **[课堂知识点对照.md](../../design/课堂知识点对照.md)** — 说明哪些示例用于本项目、如何映射。

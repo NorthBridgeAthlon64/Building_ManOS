@@ -2,7 +2,7 @@ package cn.handset.factory;
 
 public interface Network {
 	/**
-	 * Á¬½ÓÍøÂç
+	 * è¿æ¥ç½‘ç»œ
 	 */
 	void networkConn();
 }

@@ -2,7 +2,7 @@ package cn.handset.factory;
 
 public interface TheakePictures {
 	/**
-	 * ÕÕÏà
+	 * ç…§ç›¸
 	 */
 	void takePicture();
 }

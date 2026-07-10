@@ -13,7 +13,7 @@ public class User {
 	private Role role = null;
 	
 	/**
-	 * µÇÂ¼
+	 * ç™»å½•
 	 * @param username
 	 * @param password
 	 * @return
@@ -21,17 +21,17 @@ public class User {
 	public boolean login(String username, String password){
 		if(username.equals(password)){
 			if (username.equals("admin")) {
-				Role storeManager = new Role();// ´´½¨¿â¹Ü½ÇÉ«
-				storeManager.setDescription("¹ÜÀíÔ±");
-				StoreMgr dfStoreMgr=new DefaultStoreMgr();//´´½¨¿â¹ÜÈ¨ÏŞ
-				storeManager.setStoreMgr(dfStoreMgr);// ·ÖÅäÈ¨ÏŞ
-				setRole(storeManager);// ÎªÓÃ»§ÊÚÈ¨½ÇÉ«
+				Role storeManager = new Role();// åˆ›å»ºåº“ç®¡è§’è‰²
+				storeManager.setDescription("ç®¡ç†å‘˜");
+				StoreMgr dfStoreMgr=new DefaultStoreMgr();//åˆ›å»ºåº“ç®¡æƒé™
+				storeManager.setStoreMgr(dfStoreMgr);// åˆ†é…æƒé™
+				setRole(storeManager);// ä¸ºç”¨æˆ·æˆæƒè§’è‰²
 			} else {
-				Role customer = new Role();// ´´½¨¹Ë¿Í½ÇÉ«
-				customer.setDescription("¹Ë¿Í");
-				Normal dfCustomer=new DefaultCustomer();//´´½¨¿â¹ÜÈ¨ÏŞ
-				customer.setNormal(dfCustomer);// ·ÖÅäÈ¨ÏŞ
-				setRole(customer);// ÎªÓÃ»§ÊÚÈ¨½ÇÉ«
+				Role customer = new Role();// åˆ›å»ºé¡¾å®¢è§’è‰²
+				customer.setDescription("é¡¾å®¢");
+				Normal dfCustomer=new DefaultCustomer();//åˆ›å»ºåº“ç®¡æƒé™
+				customer.setNormal(dfCustomer);// åˆ†é…æƒé™
+				setRole(customer);// ä¸ºç”¨æˆ·æˆæƒè§’è‰²
 			}
 			return true;
 		}
@@ -39,7 +39,7 @@ public class User {
 	}
 	
 	/**
-	 * Í¼ÊéÈë¿â
+	 * å›¾ä¹¦å…¥åº“
 	 * @param bookId
 	 * @param num
 	 */
@@ -48,7 +48,7 @@ public class User {
 	}
 	
 	/**
-	 * Í¼Êé³ö¿â
+	 * å›¾ä¹¦å‡ºåº“
 	 * @param bookId
 	 * @param num
 	 */
@@ -57,7 +57,7 @@ public class User {
 	}
 	
 	/**
-	 * ĞÂÔöÍ¼Êé
+	 * æ–°å¢å›¾ä¹¦
 	 * @param book
 	 */
 	public void save(Book book){
@@ -65,14 +65,14 @@ public class User {
 	}
 	
 	/**
-	 * ²é¿´Í¼ÊéĞÅÏ¢
+	 * æŸ¥çœ‹å›¾ä¹¦ä¿¡æ¯
 	 */
 	public void query(){
 		role.query();
 	}
 	
 	/**
-	 * ½áÕË
+	 * ç»“è´¦
 	 * @param book
 	 */
 	public void checkout(Book book){
@@ -80,7 +80,7 @@ public class User {
 	}
 	
 	/**
-	 * ¹ºÂòÍ¼Êé
+	 * è´­ä¹°å›¾ä¹¦
 	 * @param bookId
 	 * @param num
 	 * @return
@@ -90,7 +90,7 @@ public class User {
 	}
 	
 	/**
-	 * ¹ºÂò¸½ÔùÆ·
+	 * è´­ä¹°é™„èµ å“
 	 * @param exCode
 	 * @return
 	 */

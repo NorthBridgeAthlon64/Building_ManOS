@@ -13,7 +13,7 @@
 
 ## 课堂参考代码
 
-`docs/test/course_example_java_learn/` — 详见其 [README.md](../test/course_example_java_learn/README.md)
+`docs/course_example_java_learn/` — 详见其 [README.md](../course_example_java_learn/README.md)
 
 ## 待补充（文档组协作）
 

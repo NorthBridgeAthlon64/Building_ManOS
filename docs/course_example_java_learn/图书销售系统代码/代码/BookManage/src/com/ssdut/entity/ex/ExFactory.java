@@ -2,7 +2,7 @@ package com.ssdut.entity.ex;
 
 public class ExFactory {
 	/**
-	 * ´´½¨¸½ÔùÆ·
+	 * åˆ›å»ºé™„èµ å“
 	 * @param id
 	 * @return
 	 */

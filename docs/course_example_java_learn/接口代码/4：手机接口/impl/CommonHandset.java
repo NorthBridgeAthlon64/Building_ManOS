@@ -4,7 +4,7 @@ import cn.handset.factory.Handset;
 import cn.handset.factory.PlayWiring;
 
 /**
- * ÆÕÍ¨ÊÖ»ú
+ * æ™®é€šæ‰‹æœº
  *
  */
 public class CommonHandset extends Handset implements PlayWiring {
@@ -19,16 +19,16 @@ public class CommonHandset extends Handset implements PlayWiring {
 	
 	@Override
 	public void play(String content) {
-		System.out.println("¿ªÊ¼²¥·ÅÒôÀÖ¡¶"+content+"¡·......");
+		System.out.println("å¼€å§‹æ’­æ”¾éŸ³ä¹ã€Š"+content+"ã€‹......");
 	}
 
 	@Override
 	public void sendInfo() {
-		System.out.println("·¢ËÍÎÄ×ÖĞÅÏ¢......");
+		System.out.println("å‘é€æ–‡å­—ä¿¡æ¯......");
 	}
 
 	@Override
 	public void call() {
-		System.out.println("¿ªÊ¼ÓïÒôÍ¨»°.....");
+		System.out.println("å¼€å§‹è¯­éŸ³é€šè¯.....");
 	}
 }

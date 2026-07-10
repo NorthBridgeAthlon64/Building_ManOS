@@ -2,8 +2,8 @@ package entity;
 
 public class NewTitle {
 	private int id;            //ID
-	private String titleName;  //Ãû³Æ
-	private String creater;    //´´½¨Õß
+	private String titleName;  //åç§°
+	private String creater;    //åˆ›å»ºè€…
 	public NewTitle() {
 	}
 	public NewTitle(int id, String titleName, String creater) {

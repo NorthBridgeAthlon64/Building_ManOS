@@ -3,11 +3,11 @@ package com.ssdult.eflowerShop.service;
 import com.ssdult.eflowerShop.entity.Flower;
 
 /**
- *ÂôÏÊ»¨½Ó¿Ú
+ *å–é²œèŠ±æ¥å£
  */
 public interface Sellable {
 	/**
-	 * ÂôÏÊ»¨
+	 * å–é²œèŠ±
 	 */
 	public void sell(Flower flower);
 }

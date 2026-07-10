@@ -1,10 +1,10 @@
 package cn.door;
 
 /**
- * ÃÅ 
+ * é—¨ 
  *
  */
 public abstract class Door {
-	public abstract void open();  //¿ª
-	public abstract void close();  //¹Ø
+	public abstract void open();  //å¼€
+	public abstract void close();  //å…³
 }

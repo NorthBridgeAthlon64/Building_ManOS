@@ -1,8 +1,8 @@
 package cn.handset.factory;
 
 public abstract class Handset {
-	private String brand;  //Æ·ÅÆ
-	private String type;   //ĞÍºÅ
+	private String brand;  //å“ç‰Œ
+	private String type;   //å‹å·
 	
 	public Handset(){
 		
@@ -14,16 +14,16 @@ public abstract class Handset {
 	}
 	
 	/**
-	 * ·¢ĞÅÏ¢
+	 * å‘ä¿¡æ¯
 	 */
 	public abstract void sendInfo(); 
     /**
-     * ´òµç»°
+     * æ‰“ç”µè¯
      */
 	public abstract void call();
 	
 	public void info(){
-		System.out.println("ÕâÊÇÒ»¿îĞÍºÅÎª"+type+"µÄ"+brand+"ÊÖ»ú:");
+		System.out.println("è¿™æ˜¯ä¸€æ¬¾å‹å·ä¸º"+type+"çš„"+brand+"æ‰‹æœº:");
 	}
 	public String getBrand() {
 		return brand;

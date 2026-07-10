@@ -4,14 +4,14 @@ import cn.handset.impl.AptitudeHandset;
 import cn.handset.impl.CommonHandset;
 
 /**
- * ÊÖ»ú²âÊÔÀà
+ * æ‰‹æœºæµ‹è¯•ç±»
  *
  */
 public class HandsetTest {
 	public static void main(String[] args) {
-		CommonHandset coHandset=new CommonHandset("Ë÷Äá°®Á¢ĞÅ","G502c");
+		CommonHandset coHandset=new CommonHandset("ç´¢å°¼çˆ±ç«‹ä¿¡","G502c");
 		coHandset.info();
-		coHandset.play("ÈÈÑ©");
+		coHandset.play("çƒ­é›ª");
 		coHandset.sendInfo();
 		coHandset.call();
 		System.out.println();
@@ -19,7 +19,7 @@ public class HandsetTest {
 		AptitudeHandset aHandset=new AptitudeHandset("I9100","HTC");
 		aHandset.info();
 		aHandset.networkConn();
-		aHandset.play("Ğ¡Ê±´ú");
+		aHandset.play("å°æ—¶ä»£");
 		aHandset.takePicture();
 		aHandset.sendInfo();
 		aHandset.call();

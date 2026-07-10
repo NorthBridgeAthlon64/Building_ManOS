@@ -3,10 +3,10 @@ package cn.myApp.sale3;
 public class Test {
 	public static void main(String[] args) {
 		Site site = new Site();
-		Thread person1= new Thread(site,"ÌÒÅÜÅÜ");
-		Thread person2= new Thread(site,"ÇÀÆ±´úÀí");
-		Thread person3= new Thread(site,"»ÆÅ£µ³");
-		System.out.println("********¿ªÊ¼ÇÀÆ±********");
+		Thread person1= new Thread(site,"æ¡ƒè·‘è·‘");
+		Thread person2= new Thread(site,"æŠ¢ç¥¨ä»£ç†");
+		Thread person3= new Thread(site,"é»„ç‰›å…š");
+		System.out.println("********å¼€å§‹æŠ¢ç¥¨********");
 		person1.start();
 		person2.start();
 		person3.start();

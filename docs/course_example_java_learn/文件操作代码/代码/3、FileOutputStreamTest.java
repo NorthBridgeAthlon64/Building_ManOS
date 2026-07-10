@@ -8,14 +8,14 @@ public class FileOutputStreamTest {
 	
 	public static void main(String[] args) {
 		 try {
-			 String str ="ºÃºÃÑ§Ï°Java";
+			 String str ="å¥½å¥½å­¦ä¹ Java";
 	         byte[] words  = str.getBytes();
 	         FileOutputStream fos = new FileOutputStream("D:\\myDoc\\hello.txt",true);
 	         fos.write(words, 0, words.length);
-	         System.out.println("helloÎÄ¼þÒÑ¸üÐÂ!");
+	         System.out.println("helloæ–‡ä»¶å·²æ›´æ–°!");
 	         fos.close();
 	      }catch (IOException obj) {
-	    	  System.out.println("´´½¨ÎÄ¼þÊ±³ö´í!");
+	    	  System.out.println("åˆ›å»ºæ–‡ä»¶æ—¶å‡ºé”™!");
 	      }
 	}
 }

@@ -1,7 +1,7 @@
 package cn.printer.printer;
 
 /**
- * B5ֽ�ࡣ
+ * B5纸类。
  */
 public class B5Paper implements Paper {
 

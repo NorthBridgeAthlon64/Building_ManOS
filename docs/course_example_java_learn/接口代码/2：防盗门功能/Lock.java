@@ -1,10 +1,10 @@
 package cn.door;
 
 /**
- * Ëø ½Ó¿Ú
+ * é” æ¥å£
  *
  */
 public interface Lock {
-	void lockUp();  //Ëø
-	void openLock();  //¿ªËø
+	void lockUp();  //é”
+	void openLock();  //å¼€é”
 }

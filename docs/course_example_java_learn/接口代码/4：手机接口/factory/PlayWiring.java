@@ -2,8 +2,8 @@ package cn.handset.factory;
 
 public interface PlayWiring {
 	/**
-	 * ²¥·Å
-	 * @param content ÄÚÈİ
+	 * æ’­æ”¾
+	 * @param content å†…å®¹
 	 */
 	void play(String content);
 }

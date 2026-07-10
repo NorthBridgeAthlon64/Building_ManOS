@@ -5,21 +5,21 @@ import com.ssdut.biz.BookBiz;
 import com.ssdut.entity.Book;
 
 /**
- * 默认库管
+ * 榛樿搴撶
  */
 public class DefaultStoreMgr implements StoreMgr {
 	
 	BookBiz bookBiz=new BookBiz();
 
 	/**
-	 * 重写图书入库
+	 * 閲嶅啓鍥句功鍏ュ簱
 	 */
 	public void in(int bookId, int num) {
 		
 		bookBiz.inBook(bookId, num);	
 	}
 	/**
-	 * 重写新增图书
+	 * 閲嶅啓鏂板鍥句功
 	 */
 	public void save(Book book) {
 		
@@ -27,7 +27,7 @@ public class DefaultStoreMgr implements StoreMgr {
 	}
 
 	/**
-	 * 重写出库
+	 * 閲嶅啓鍑哄簱
 	 */
 	public void out(int bookId, int num) {
 		
@@ -35,7 +35,7 @@ public class DefaultStoreMgr implements StoreMgr {
 	}
 
 	/**
-	 * 重写库存查询
+	 * 閲嶅啓搴撳瓨鏌ヨ
 	 */
 	public void query() {
 		

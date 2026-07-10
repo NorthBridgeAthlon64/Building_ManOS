@@ -293,11 +293,70 @@ public final class ConsoleUtils {
 │     ├── 选择折扣类型
 │     ├── 输入客户姓名
 │     └── 确认成交
-├── 5. 销售记录 → 调用 SaleRecordDao.findAll()
+├── 5. 销售记录 → 调用 SaleRecordService.listAll()（或 PurchaseService）
 └── 0. 退出
 ```
 
-`MenuController` 持有各 `Service` 实例；子菜单可拆为私有方法或独立类（二期重构）。
+`MenuController` 持有各 `Service` 实例；子菜单用**私有方法**即可，不必再拆独立类。
+
+---
+
+## 10. 运行与交付架构（脚本 → 终端）
+
+本系统最终交付形态：**双击/执行脚本 → 终端出现菜单 → 键盘操作**。架构按此设计，无多余组件。
+
+### 10.1 运行时链路
+
+```
+scripts/run.ps1（或 run.sh）
+    → mvn compile + mvn exec:java
+        → Main.main()
+            → new MenuController().run()
+                → Scanner 读入 / System.out 输出
+                    → XxxService → XxxDao → MySQL
+```
+
+**全进程单线程、单控制台窗口**，不需要 Web 容器、不需要 GUI、不需要多进程。
+
+### 10.2 脚本职责（答辩用）
+
+| 脚本 | 作用 |
+|------|------|
+| `scripts/run.ps1` | Windows：编译并启动 |
+| `scripts/run.sh` | Linux/macOS：编译并启动 |
+
+答辩前约定：
+
+1. 本机 MySQL 已启动，已执行 `sql/schema.sql`
+2. `database.properties` 密码与本机一致
+3. 直接运行脚本，**不要**要求评委手动 `mvn` 敲命令
+
+### 10.3 Main 入口（实现后）
+
+```java
+public static void main(String[] args) {
+    try {
+        new MenuController().run();
+    } catch (Exception e) {
+        System.out.println("系统异常：" + e.getMessage());
+    }
+}
+```
+
+Main **只做启动**，不写菜单逻辑（菜单全在 `cli` 包）。
+
+### 10.4 架构是否过度设计？
+
+| 模块 | 是否必要 | 说明 |
+|------|----------|------|
+| cli / service / dao 三层 | ✅ 必要 | 课程硬性要求分层 |
+| 4 个 Service 类 | ✅ 合理 | 对应业务模块，答辩好讲 |
+| DiscountStrategy | ✅ 合理 | 满足折扣功能 + 策略模式加分 |
+| `repository` 包 | ❌ 不用 | 已规定用 `dao`，删除或勿建此类 |
+| 连接池 HikariCP | ⭕ 可选 | 控制台作业可不引入 |
+| dao 接口 + Impl 拆分 | ⭕ 可选 | 鲜花商店有，本项目**具体类即可**，更简单 |
+
+**结论**：对「脚本 + 终端 + 课程分层」而言，当前架构**恰到好处**，不是过度设计；切忌再叠 Spring Boot、Swing 等。
 
 ---
 
@@ -358,20 +417,19 @@ public final class ConsoleUtils {
 
 ## 9. 配置与运行
 
+详见 **§10 运行与交付架构**。快速命令：
+
 ```bash
-# 建库
+# 建库（首次）
 mysql -u root -p < sql/schema.sql
 
-# 编译
+# 推荐：一键脚本启动（答辩用）
+scripts/run.ps1        # Windows
+scripts/run.sh         # Linux/macOS
+
+# 或手动
 mvn clean compile
-
-# 运行
 mvn exec:java
-
-# 可选环境变量
-set DB_URL=jdbc:mysql://localhost:3306/building_manos
-set DB_USER=root
-set DB_PASSWORD=your_password
 ```
 
 ---
@@ -379,7 +437,7 @@ set DB_PASSWORD=your_password
 ## 11. 课堂知识点在本项目中的应用
 
 > 详细对照表见 [课堂知识点对照.md](./课堂知识点对照.md)  
-> 课堂示例代码：`docs/test/course_example_java_learn/`
+> 课堂示例代码：`docs/course_example_java_learn/`
 
 ### 11.1 分层：参照鲜花商店，做规范化改进
 
@@ -484,3 +542,4 @@ password=root
 |------|------|------|
 | v0.1 | 2026-07-10 | 初版框架：包结构、类职责、接口签名、菜单结构 |
 | v0.2 | 2026-07-10 | 补充课堂知识点应用、JDBC/异常/Properties 规定 |
+| v0.3 | 2026-07-10 | 补充脚本启动运行架构；修正菜单层调用 service |

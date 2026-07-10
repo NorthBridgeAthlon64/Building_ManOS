@@ -1,17 +1,17 @@
 package cn.usb;
 
 /**
- * ²âÊÔÀà¡£
+ * æµ‹è¯•ç±»ã€‚
  * @param args
  */
 public class Test {	
 	public static void main(String[] args) {
 		
-		//1¡¢UÅÌ
+		//1ã€Uç›˜
 		UsbInterface uDisk = new UDisk();
 		uDisk.service();
 		
-		//2¡¢USB·çÉÈ
+		//2ã€USBé£æ‰‡
 		UsbInterface usbFan= new UsbFan();
 		usbFan.service();
 	}

@@ -2,11 +2,11 @@ package cn.printer.printer;
 
 
 /**
- * ²ÊÉ«Ä«ºÐ¡£ 
+ * å½©è‰²å¢¨ç›’ã€‚ 
  */
 public class ColorInkBox implements InkBox {
 	
 	public String getColor() {
-		return "²ÊÉ«";
+		return "å½©è‰²";
 	}
 }

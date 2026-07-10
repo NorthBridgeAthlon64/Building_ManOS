@@ -1,7 +1,7 @@
 package cn.printer.printer;
 
 /**
- * A4ֽ�ࡣ
+ * A4纸类。
  */
 public class A4Paper implements Paper {
 

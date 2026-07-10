@@ -6,42 +6,42 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 /**
-  * Õâ¸öÀà¸´ÖÆÎÄ±¾ÎÄ¼ş
+  * è¿™ä¸ªç±»å¤åˆ¶æ–‡æœ¬æ–‡ä»¶
   */
 class FileCopy {
 
     /** 
-     * ¹¹Ôì·½·¨. 
+     * æ„é€ æ–¹æ³•. 
      */
     protected FileCopy() {
     }
 
     /** 
-     * ¸´ÖÆÎÄ¼şµÄ·½·¨.
-     * @param file1 ´æ´¢Ô´ÎÄ¼şÃû.
-     * @param file2 ´æ´¢Ä¿±êÎÄ¼şÃû.
+     * å¤åˆ¶æ–‡ä»¶çš„æ–¹æ³•.
+     * @param file1 å­˜å‚¨æºæ–‡ä»¶å.
+     * @param file2 å­˜å‚¨ç›®æ ‡æ–‡ä»¶å.
      */
     public void copy(final String file1, final String file2) {
 
-         //´´½¨ File ¶ÔÏó.
+         //åˆ›å»º File å¯¹è±¡.
         File inFile  = new File(file1);  
         File outFile = new File(file2);
 
       
         try {
-        	System.out.println("¸´ÖÆÎÄ¼ş¿ªÊ¼¡£¡£¡£");
-            //ÎªÎÄ±¾ÎÄ¼ş´´½¨ reader ÀàºÍ writer Àà.
+        	System.out.println("å¤åˆ¶æ–‡ä»¶å¼€å§‹ã€‚ã€‚ã€‚");
+            //ä¸ºæ–‡æœ¬æ–‡ä»¶åˆ›å»º reader ç±»å’Œ writer ç±».
             BufferedReader reader = new BufferedReader(new FileReader(inFile));
             BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
 
-            //Ö»ÒªÓĞÊäÈëĞĞ¾Í½øĞĞÑ­»·.
+            //åªè¦æœ‰è¾“å…¥è¡Œå°±è¿›è¡Œå¾ªç¯.
             String line = null;
             while ((line = reader.readLine()) != null) {
                 writer.write(line);
                 writer.newLine();   
             }
 
-            //¹Ø±Õ reader ºÍ writer.
+            //å…³é—­ reader å’Œ writer.
             reader.close();  
             writer.close();  
 
@@ -49,12 +49,12 @@ class FileCopy {
             System.err.println(e);
             System.exit(1);
         }
-        System.out.println("¸´ÖÆÎÄ¼ş½áÊø¡£");
+        System.out.println("å¤åˆ¶æ–‡ä»¶ç»“æŸã€‚");
     }
 }
 
 /** 
- * ÕâÊÇÒ»¸ö main Àà. 
+ * è¿™æ˜¯ä¸€ä¸ª main ç±». 
  */
 class CopyTextFile {
     public static void main(String[] args) throws IOException {    	

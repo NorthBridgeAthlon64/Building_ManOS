@@ -4,11 +4,11 @@ import com.ssdult.eflowerShop.entity.Flower;
 import com.ssdult.eflowerShop.entity.FlowerStore;
 
 /**
- * @author  ÂòÏÊ»¨½Ó¿Ú
+ * @author  ä¹°é²œèŠ±æ¥å£
  */
 public interface Buyable {
 	/**
-	 * ¹Ë¿Í¹ºÂò¿â´æÏÊ»¨
+	 * é¡¾å®¢è´­ä¹°åº“å­˜é²œèŠ±
 	 */
 	public void buy(Flower flower,FlowerStore store);
 	

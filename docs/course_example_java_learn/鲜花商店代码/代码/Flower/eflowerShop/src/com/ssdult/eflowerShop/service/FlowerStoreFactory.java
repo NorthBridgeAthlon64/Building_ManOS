@@ -1,11 +1,11 @@
 package com.ssdult.eflowerShop.service;
 
 /**
- * @author 鲜花商店工厂接口
+ * @author 椴滆姳鍟嗗簵宸ュ巶鎺ュ彛
  */
 public interface FlowerStoreFactory {
 	/**
-	 * 创建鲜花商店方法
+	 * 鍒涘缓椴滆姳鍟嗗簵鏂规硶
 	 */
 	public void createFlowerStore();
 }

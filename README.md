@@ -15,7 +15,7 @@
 | [**Java 技术框架**](./docs/design/Java技术框架.md) | 分层架构、包结构、类职责、接口签名、菜单、开发顺序 |
 | [**数据库设计**](./docs/design/数据库设计.md) | E-R 图、表结构、字段映射、DAO-SQL 对照、事务约定 |
 | [**课堂知识点对照**](./docs/design/课堂知识点对照.md) | 课堂示例代码与本项目的映射、JDBC 学习路径 |
-| [课堂示例代码](./docs/test/course_example_java_learn/) | 课程 JDBC、鲜花商店分层等原始示例 |
+| [课堂示例代码](./docs/course_example_java_learn/) | 课程 JDBC、鲜花商店分层等原始示例（UTF-8） |
 | [代码注释规范](./docs/design/代码注释规范.md) | JavaDoc 标准（`@author`、`@param` 等） |
 | [sql/schema.sql](./sql/schema.sql) | 建库建表脚本 |
 | [sql/init-data.sql](./sql/init-data.sql) | 答辩演示初始数据 |

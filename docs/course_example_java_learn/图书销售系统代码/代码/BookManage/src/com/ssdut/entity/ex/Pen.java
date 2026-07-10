@@ -2,7 +2,7 @@ package com.ssdut.entity.ex;
 
 public class Pen extends EX {
 	public Pen(){
-		this.setEx_name("¸Ö±Ê");
+		this.setEx_name("é’¢ç¬”");
 		this.setPrice(10);
 	}
 }

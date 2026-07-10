@@ -1,17 +1,17 @@
 package cn.door;
 
 /**
- * ²âÊÔÀà¡£
+ * æµ‹è¯•ç±»ã€‚
  */
 public class DoorTest {
 	public static void main(String[] args) {
-      //´´½¨¾ßÌå·ÀµÁ¶ÔÏó
+      //åˆ›å»ºå…·ä½“é˜²ç›—å¯¹è±¡
 		TheftproofDoor tfd=new TheftproofDoor();
-		tfd.close();  //¹ØÃÅ
-		tfd.lockUp();  //ËøÃÅ
-		tfd.takePictures(); //À´·Ã¿ÍÈËÅÄÕÕ´æ´¢
-		tfd.openLock(); //¿ªËø
-		tfd.open();  //¿ªÃÅ
+		tfd.close();  //å…³é—¨
+		tfd.lockUp();  //é”é—¨
+		tfd.takePictures(); //æ¥è®¿å®¢äººæ‹ç…§å­˜å‚¨
+		tfd.openLock(); //å¼€é”
+		tfd.open();  //å¼€é—¨
 	}
 }
 

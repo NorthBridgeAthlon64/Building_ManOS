@@ -22,12 +22,12 @@ import com.ssdult.eflowerShop.service.FlowerStoreService;
 
 /**
  * 
- * @author ÏÊ»¨¹Ë¿ÍÊµÏÖÀà
+ * @author é²œèŠ±é¡¾å®¢å®ç°ç±»
  *
  */
 public class FlowerOwnerServiceImpl implements FlowerOwnerService{
 	/**
-	 * ¹Ë¿Í¹ºÂò¿â´æÏÊ»¨£¬¸ù¾İÓÃ»§¿ØÖÆÌ¨ÊäÈë»ñµÃµ½µÄĞòºÅ£¬À´Êµ¼Êµ÷ÓÃ¹ºÂò¿â´æÏÊ»¨»òÕß¹ºÂòĞÂÅàÓıµÄÏÊ»¨
+	 * é¡¾å®¢è´­ä¹°åº“å­˜é²œèŠ±ï¼Œæ ¹æ®ç”¨æˆ·æ§åˆ¶å°è¾“å…¥è·å¾—åˆ°çš„åºå·ï¼Œæ¥å®é™…è°ƒç”¨è´­ä¹°åº“å­˜é²œèŠ±æˆ–è€…è´­ä¹°æ–°åŸ¹è‚²çš„é²œèŠ±
 	 */
 	@Override
 	public void sell(Flower flower) {
@@ -35,9 +35,9 @@ public class FlowerOwnerServiceImpl implements FlowerOwnerService{
 		FlowerOwnerDaoImpl ownerDao = new FlowerOwnerDaoImpl();
 		String updatesql = "update flower set store_id=?,owner_id=NUll  where id=?";
 		Object[] param = {flower.getStoreId(), flower.getId() };
-		int updateFlower = flowerDao.executeSQL(updatesql, param);// ¸üĞÂÏÊ»¨ĞÅÏ¢
+		int updateFlower = flowerDao.executeSQL(updatesql, param);// æ›´æ–°é²œèŠ±ä¿¡æ¯
 
-		if (updateFlower > 0) {// ¸üĞÂ¹Ë¿ÍµÄĞÅÏ¢
+		if (updateFlower > 0) {// æ›´æ–°é¡¾å®¢çš„ä¿¡æ¯
 			String ownersql = "select * from flowerowner where id=?";
 			String ownerparam[] = { String.valueOf(flower.getOwnerId()) };
 
@@ -45,14 +45,14 @@ public class FlowerOwnerServiceImpl implements FlowerOwnerService{
 			String updateOwnerSql = "update flowerowner set money=? where id=?";
 			Object[] ownerParam = { (owner.getMoney() + flower.getPrice()), owner.getId() };
 			int updateOwner = ownerDao.executeSQL(updateOwnerSql, ownerParam);
-			if (updateOwner > 0) {// ¸üĞÂÏÊ»¨ÉÌµêµÄĞÅÏ¢
+			if (updateOwner > 0) {// æ›´æ–°é²œèŠ±å•†åº—çš„ä¿¡æ¯
 				FlowerStoreServiceImpl store = new FlowerStoreServiceImpl();
 				FlowerStore flowerStore = store.getFlowerStore(flower.getStoreId());
 				String updateStore = "update flowerstore set balance=? where id=?";
 				Object[] storeParam = { (flowerStore.getBalance() -flower.getPrice()),flowerStore.getId()};
 				FlowerStoreDaoImpl storeDao = new FlowerStoreDaoImpl();
 				int updatestore = storeDao.executeSQL(updateStore, storeParam);
-				if (updatestore > 0) {// ¸üĞÂÏÊ»¨ÉÌµêÌ¨ÕÊĞÅÏ¢
+				if (updatestore > 0) {// æ›´æ–°é²œèŠ±å•†åº—å°å¸ä¿¡æ¯
 					String insertsql = "insert into account(deal_type,flower_id,seller_id,buyer_id,price,deal_time) values (?, ?, ?, ?, ?, ?)";
 					String date = new SimpleDateFormat("yyyy-MM-dd")
 							.format(new Date());
@@ -62,7 +62,7 @@ public class FlowerOwnerServiceImpl implements FlowerOwnerService{
 					int insertAccount = accountDao.updateAccount(insertsql,
 							accountParam);
 					if (insertAccount > 0) {
-						System.out.println("ÄúÒÑ³É¹¦Âô³öÏÊ»¨£º"+flower.getName()+"»ñµÃÊÕÈë"+flower.getPrice());
+						System.out.println("æ‚¨å·²æˆåŠŸå–å‡ºé²œèŠ±ï¼š"+flower.getName()+"è·å¾—æ”¶å…¥"+flower.getPrice());
 					}
 				}
 			}
@@ -81,15 +81,15 @@ public class FlowerOwnerServiceImpl implements FlowerOwnerService{
 		FlowerStoreDao storeDao=new FlowerStoreDaoImpl();
 		FlowerStore store = storeDao.getFlowerStore(sql, param1);	
 		FlowerStoreService flowerStore = new FlowerStoreServiceImpl();
-		int updateFlower = flowerStore.modifyFlower(flower, owner, null);// ¸üĞÂÏÊ»¨ĞÅÏ¢
-		if (updateFlower > 0) {// ¸üĞÂ¹Ë¿ÍµÄĞÅÏ¢
+		int updateFlower = flowerStore.modifyFlower(flower, owner, null);// æ›´æ–°é²œèŠ±ä¿¡æ¯
+		if (updateFlower > 0) {// æ›´æ–°é¡¾å®¢çš„ä¿¡æ¯
 			int updateOwner = flowerStore.modifyOwner(owner, flower, 0);
-			if (updateOwner > 0) {// ¸üĞÂÏÊ»¨ÉÌµêµÄĞÅÏ¢
+			if (updateOwner > 0) {// æ›´æ–°é²œèŠ±å•†åº—çš„ä¿¡æ¯
 				int updateStore = flowerStore.modifyStore(flower, 0,store);
-				if (updateStore > 0) {// ¸üĞÂÏÊ»¨ÉÌµêÕÊ»§ĞÅÏ¢
+				if (updateStore > 0) {// æ›´æ–°é²œèŠ±å•†åº—å¸æˆ·ä¿¡æ¯
 					int insertAccount = flowerStore.modifyAccount(flower, owner);
 					if (insertAccount > 0) {
-						System.out.println("ÄúÒÑ³É¹¦¹ºÂò¼Û¸ñÎª"+flower.getPrice()+"µÄ"+flower.getName());
+						System.out.println("æ‚¨å·²æˆåŠŸè´­ä¹°ä»·æ ¼ä¸º"+flower.getPrice()+"çš„"+flower.getName());
 					}
 				}
 			}
@@ -98,31 +98,31 @@ public class FlowerOwnerServiceImpl implements FlowerOwnerService{
 	}
 
 	/**
-	 *¹Ë¿ÍµÇÂ¼
+	 *é¡¾å®¢ç™»å½•
 	 */
 	@Override
 	public FlowerOwner login() {
 		Scanner input = new Scanner(System.in);
-		// 1¡¢ÊäÈë¹Ë¿ÍĞÕÃû
-		System.out.println("ÇëÏÈµÇÂ¼£¬ÇëÄúÊäÈëĞÕÃû£º");
+		// 1ã€è¾“å…¥é¡¾å®¢å§“å
+		System.out.println("è¯·å…ˆç™»å½•ï¼Œè¯·æ‚¨è¾“å…¥å§“åï¼š");
 		String ownerName = input.nextLine().trim();
-		System.out.println("ÇëÄúÊäÈëÃÜÂë£º");
+		System.out.println("è¯·æ‚¨è¾“å…¥å¯†ç ï¼š");
 		String ownerPassword = input.nextLine().trim();
 		FlowerOwnerDao ownerDao = new FlowerOwnerDaoImpl();
 		String sql = "select * from flowerowner where name=? and password=?";
 		String[] param = { ownerName, ownerPassword };
 		FlowerOwner owner = ownerDao.selectOwner(sql, param);
 		if (null != owner) {
-			System.out.println("-------¹§Ï²Äú³É¹¦µÇÂ¼-------");
-			System.out.println("-------ÄúµÄ»ù±¾ĞÅÏ¢£º-------");
-			System.out.println("Ãû×Ö£º" + owner.getName());
-			System.out.println("×Ê½ğ£º" + owner.getMoney());
+			System.out.println("-------æ­å–œæ‚¨æˆåŠŸç™»å½•-------");
+			System.out.println("-------æ‚¨çš„åŸºæœ¬ä¿¡æ¯ï¼š-------");
+			System.out.println("åå­—ï¼š" + owner.getName());
+			System.out.println("èµ„é‡‘ï¼š" + owner.getMoney());
 		}
 		return owner;
 	}
 	/**
 	 * 
-	 * ¸ù¾İ¹Ë¿Í±êÊ¶·û£¨id£©»ñµÃµ½¸Ã¹Ë¿ÍËùÓĞÏÊ»¨ĞÅÏ¢
+	 * æ ¹æ®é¡¾å®¢æ ‡è¯†ç¬¦ï¼ˆidï¼‰è·å¾—åˆ°è¯¥é¡¾å®¢æ‰€æœ‰é²œèŠ±ä¿¡æ¯
 	 */
 	@Override
 	public List<Flower> getMyFlower(int ownerId) {

@@ -4,12 +4,12 @@ import com.ssdult.eflowerShop.entity.Flower;
 import com.ssdult.eflowerShop.entity.FlowerStore;
 
 /**
- * @author 鲜花培育接口
+ * @author 椴滆姳鍩硅偛鎺ュ彛
  * 
  */
 public interface Breadable {
 	/**
-	 * 鲜花繁殖
+	 * 椴滆姳绻佹畺
 	 */
 	public Flower bread(String flower,FlowerStore store);
 }
