@@ -19,7 +19,7 @@
 
 ## 课堂参考代码
 
-`docs/course_example_java_learn/` — 详见其 [README.md](../course_example_java_learn/README.md)
+`examples/` — 详见其 [README.md](../../examples/README.md)
 
 ## 待补充
 
