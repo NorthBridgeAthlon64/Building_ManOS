@@ -104,8 +104,9 @@ src/main/java/com/building/manos/
 │   └── PurchaseService.java
 ├── discount/
 │   ├── DiscountStrategy.java     # 接口
-│   ├── PercentageDiscount.java   # 比例折扣
-│   └── ThresholdDiscount.java    # 满减
+│   ├── PriceTier.java            # 按原价档位划分（包内）
+│   ├── PercentageDiscount.java   # 档位比例折扣
+│   └── ThresholdDiscount.java    # 档位满减
 ├── cli/
 │   ├── MenuController.java
 │   └── ConsoleUtils.java
@@ -132,8 +133,9 @@ src/main/java/com/building/manos/
 | `SearchService` | service | 多条件组合查询 | P1 |
 | `PurchaseService` | service | 购买流程、折扣、落库 | P1 |
 | `DiscountStrategy` | discount | 折扣策略接口 | P1 |
-| `PercentageDiscount` | discount | 按比例折扣 | P1 |
-| `ThresholdDiscount` | discount | 满额减固定金额 | P2 |
+| `PriceTier` | discount | 按原价档位划分优惠参数 | P1 |
+| `PercentageDiscount` | discount | 档位比例折扣 | P1 |
+| `ThresholdDiscount` | discount | 档位满减 | P1 |
 | `MenuController` | cli | 主菜单与子菜单路由 | P0 |
 | `ConsoleUtils` | cli | 读入、打印表格、确认提示 | P0 |
 | `IdGenerator` | util | 生成 B/H/S 前缀主键 | P0 |
@@ -246,8 +248,18 @@ public interface DiscountStrategy {
 
 | 实现类 | 算法 |
 |--------|------|
-| `PercentageDiscount` | `originalPrice × rate`，rate ∈ (0, 1] |
-| `ThresholdDiscount` | 若 `originalPrice >= threshold` 则减 `reduceAmount`，否则不变 |
+| `PercentageDiscount` | 按 `PriceTier` 档位取 rate，`实付 = 原价 × rate`（见下表） |
+| `ThresholdDiscount` | 按 `PriceTier` 档位取减免额，`实付 = 原价 - 减免额`，不低于 0 |
+
+**档位规则（比例折扣与满减共用原价区间）**：
+
+| 原价（元） | 比例折扣 rate | 满减减免额（元） |
+|------------|---------------|------------------|
+| &lt; 1,000,000 | 1（不打折） | 20,000 |
+| 1,000,000 ≤ 原价 &lt; 3,000,000 | 0.97 | 50,000 |
+| ≥ 3,000,000 | 0.92 | 150,000 |
+
+`getDiscountValue()` 返回该次 {@code apply} 实际使用的 rate 或减免额，供写入 {@code sale_record}。
 
 ### 4.6 cli
 
