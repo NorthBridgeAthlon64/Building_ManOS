@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * {@link IdGenerator} 的主键格式与唯一性测试。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-12
  */
 class IdGeneratorTest {

@@ -10,7 +10,7 @@ import java.util.Properties;
 /**
  * 数据库连接配置，负责加载连接参数并创建 JDBC 连接。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-11
  */
 public final class DBConfig {

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * {@link BuildingDao} 的真实数据库集成测试。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-11
  */
 @EnabledIfEnvironmentVariable(named = "RUN_DB_TESTS", matches = "(?i)true")

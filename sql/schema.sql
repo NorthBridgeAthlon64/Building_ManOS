@@ -44,5 +44,6 @@ CREATE TABLE IF NOT EXISTS sale_record (
     final_price     DECIMAL(14,2) NOT NULL COMMENT '实付金额',
     customer_name   VARCHAR(50)  COMMENT '客户姓名',
     sold_at         DATETIME     DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_sale_house FOREIGN KEY (house_id) REFERENCES house(id)
+    CONSTRAINT fk_sale_house FOREIGN KEY (house_id) REFERENCES house(id),
+    UNIQUE KEY uk_sale_house (house_id)
 ) COMMENT '销售成交记录';

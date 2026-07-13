@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * 楼盘数据访问对象，负责 {@code building} 表的增删改查。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-11
  * @see Building
  * @see DBConfig

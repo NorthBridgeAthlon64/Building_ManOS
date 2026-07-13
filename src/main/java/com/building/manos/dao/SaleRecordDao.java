@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * 成交记录数据访问对象，负责 {@code sale_record} 表的写入和查询。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-12
  * @see SaleRecord
  */

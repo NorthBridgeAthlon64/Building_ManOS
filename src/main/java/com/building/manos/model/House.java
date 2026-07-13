@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 /**
  * 房屋实体，对应数据库表 {@code house}。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-11
  */
 public class House {

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * 房屋数据访问对象，负责 {@code house} 表的增删改查和条件查询。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-11
  * @see House
  * @see DBConfig

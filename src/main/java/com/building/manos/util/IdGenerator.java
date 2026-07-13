@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * 业务主键生成器，按表类型生成带前缀的时间序列编号。
  *
- * @author 开发 A（待填写）
+ * @author 陈辉
  * @since 2026-07-12
  */
 public final class IdGenerator {
