@@ -61,26 +61,31 @@
 
 **标题**：分层架构与数据库
 
-**上半 — 架构图**（占页 60%）：
+**上半 — 架构图**（占页 55%）：
 
 ```
-cli (MenuController)
+cli (MenuController)     ← ⏳ 开发中
     ↓
-service (BuildingService / PurchaseService)
+service (Building/House/Search/Purchase)  ← ✅ 邓单
     ↓
-dao (BuildingDao / HouseDao)  ← PreparedStatement
+dao + config + model     ← ✅ 陈辉 · PreparedStatement
     ↓
-MySQL (building / house / sale_record)
+MySQL (building / house / sale_record · uk_sale_house)
 ```
 
-**下半 — E-R 简图 + 购买 4 步**（一行流程）：
+**下半 — 折扣档位 + 购买流程**：
 
-`选在售房 → 折扣计价 → 更新已售 → 写入 sale_record`
+| 原价 | 比例 | 满减 |
+|------|------|------|
+| &lt;100万 | 不打折 | 减2万 |
+| 100~300万 | 97折 | 减5万 |
+| ≥300万 | **92折** | 减15万 |
 
-**口述要点**（各 15 秒）：
-- 分层单向调用，cli 不写 SQL
-- 三表关系：楼盘 1:N 房屋，成交写记录
-- 折扣用策略模式 `DiscountStrategy`
+`选在售房 → 选折扣类型 → 档位计价 → 事务落库`
+
+**口述要点**：
+- 数据层与业务层已完成；菜单冲刺中
+- 策略模式 + JDBC 事务；一套房一条成交记录
 
 ---
 
@@ -94,13 +99,12 @@ MySQL (building / house / sale_record)
 
 | 步骤 | 操作 | 一句话说明 |
 |------|------|------------|
-| ① | 启动 → 查询在售房源 | 「数据来自 MySQL」 |
-| ② | 购买一套房，九折成交 | 「service 算价，dao 落库」 |
-| ③ | 再查该房 | 「状态已变为已售」 |
+| ① | 启动 → 查「在售」 | 「数据来自 MySQL」 |
+| ② | 购 **≥300万** 房，选档位比例折扣 | 「350万×0.92，事务落库」 |
+| ③ | 再查该房 | 「状态已售」 |
 
-**PPT 素材**：主菜单截图 + 购买前后对比截图（左右分栏）；**不要**在 PPT 里列 6 步演示表。
-
-**彩排要求**：技术组单独计时，**2 分钟内必须结束**。
+> **当前阻塞**：cli / init-data 未完成 → 本页先用「进度说明 + 架构」占位，联调后补录屏。  
+> **勿说「九折」**：代码为按原价三档（≥300万为 **92折**）。
 
 ---
 
@@ -110,9 +114,9 @@ MySQL (building / house / sale_record)
 
 | 姓名 | 组别 | 主要负责 |
 |------|------|----------|
-| ___ | 技术组 | dao / service / cli |
-| ___ | 文档组 | 需求、设计、报告 |
-| ___ | PPT 组 | 答辩材料、演示 |
+| 陈辉 | 技术组 | config / model / dao / util |
+| 邓单 | 技术组 | service / discount |
+| 马玉 | 技术组 | cli 菜单（进行中） |
 
 **讲者提示**：每人 **一句**贡献，不展开；`@author` 与分工表一致。
 
@@ -123,8 +127,8 @@ MySQL (building / house / sale_record)
 **标题**：总结
 
 **三行要点**：
-- 完成控制台房屋销售系统，满足课程全部技术要求
-- 分层架构 + JDBC + 策略模式，结构清晰
+- 已完成数据层与业务层（JDBC + 档位折扣 + 购买事务）
+- 控制台菜单冲刺中，完成后即可完整演示
 - 谢谢聆听，欢迎提问
 
 > Q&A 预备答案放**备注页**或演讲稿附录，不占答辩时间。
@@ -135,9 +139,12 @@ MySQL (building / house / sale_record)
 
 仅供老师提问时投影参考，或答辩结束后留存：
 
-- 分层？cli→service→dao→MySQL  
+- 分层？cli→service→dao→MySQL（菜单开发中；service/dao 已通）  
+- 折扣？`PriceTier` 三档 + 策略模式  
+- 事务？`PurchaseService` + dao 连接重载  
+- 一套房多次成交？`uk_sale_house` 唯一约束禁止  
 - SQL 注入？PreparedStatement  
-- 数据在哪？MySQL，`sql/schema.sql`  
+- 测试？折扣与 DAO 已有 JUnit  
 
 ---
 
@@ -185,3 +192,4 @@ MySQL (building / house / sale_record)
 |------|------|------|
 | v0.1 | 2026-07-10 | 初版大纲（8~10 分钟） |
 | v0.2 | 2026-07-10 | 压缩为 5 分钟 / 6 页口述版 |
+| v0.4 | 2026-07-13 | 对齐远程 main：数据层/业务层完成；演示改为 92 折；cli 阻塞说明 |
