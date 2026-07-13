@@ -1,8 +1,33 @@
 # Java 技术框架说明
 
-> **读者**：技术组  
-> **状态**：初版框架规定（v0.1）  
-> **关联**：[数据库设计.md](./数据库设计.md) | [代码注释规范.md](./代码注释规范.md) | [课堂知识点对照.md](./课堂知识点对照.md) | [sql/schema.sql](../../sql/schema.sql)
+> **读者**：技术组、文档组、PPT 组  
+> **状态**：v0.5（同步 2026-07-13 远程 `main` 代码进度）  
+> **关联**：[数据库设计.md](./数据库设计.md) | [开发A-数据层实施计划.md](../development/开发A-数据层实施计划.md) | [代码注释规范.md](./代码注释规范.md) | [sql/schema.sql](../../sql/schema.sql)
+
+---
+
+## 0. 代码实现进度（2026-07-13）
+
+> 以仓库 `origin/main`（`88ee539`）为准；写报告 / PPT 请引用本表。
+
+| 模块 | 类/文件 | 状态 | @author | 说明 |
+|------|---------|------|---------|------|
+| **config** | `DBConfig` | ✅ | 陈辉 | `database.properties` / 环境变量；含 `DBConfigTest` |
+| **model** | `Building`、`House`、`HouseStatus`、`SaleRecord` | ✅ | 陈辉 | 与三表字段映射 |
+| **dao** | `BuildingDao`、`HouseDao`、`SaleRecordDao` | ✅ | 陈辉 | PreparedStatement；事务重载 `insert(conn)` / `updateStatusSold(conn)`；含 DAO 测试 |
+| **util** | `IdGenerator` | ✅ | 陈辉 | B/H/S 前缀主键；含单元测试 |
+| **discount** | `DiscountStrategy`、`PriceTier`、`PercentageDiscount`、`ThresholdDiscount` | ✅ | 邓单 | 按原价三档；含 JUnit |
+| **service** | `BuildingService`、`HouseService`、`SearchService`、`PurchaseService` | ✅ | 邓单 | CRUD、5 种查询、购买 JDBC 事务 |
+| **cli** | `MenuController`、`ConsoleUtils` | ⏳ | 马玉（计划） | 仅有 `.gitkeep`，**尚未实现菜单** |
+| **Main** | `Main.java` | ⏳ | 技术组 | 仍为占位输出，未启动菜单 |
+| **sql** | `schema.sql` | ✅ | — | 含 `uk_sale_house`（一套房一条成交记录） |
+| **sql** | `init-data.sql` | ⏳ | — | **演示数据尚未写入**（INSERT 仍注释） |
+
+**当前结论**：
+
+- **数据层 + 业务层 + 折扣已打通**（可通过测试 / 代码联调验证）。
+- **控制台菜单未完成** → 尚不能答辩现场演示；下一优先级：`cli` + `Main` + `init-data.sql`。
+- 购买事务：`PurchaseService` 使用 `HouseDao.updateStatusSold(Connection, …)` + `SaleRecordDao.insert(Connection, …)`。
 
 ---
 
@@ -387,41 +412,39 @@ Main **只做启动**，不写菜单逻辑（菜单全在 `cli` 包）。
 ## 7. 开发顺序（技术组）
 
 ```
-阶段 1（P0）连通性
-  DBConfig → Building/House model → BuildingDao/HouseDao
-  → BuildingService/HouseService → MenuController 骨架
+阶段 1（P0）连通性                 ✅ 已完成（陈辉）
+  DBConfig → model → BuildingDao/HouseDao/SaleRecordDao → IdGenerator
 
-阶段 2（P1）核心功能
-  SearchService + 查询菜单
-  DiscountStrategy + PurchaseService + SaleRecordDao
-  购买菜单
+阶段 2（P1）业务与折扣             ✅ 已完成（邓单）
+  BuildingService / HouseService / SearchService
+  DiscountStrategy + PriceTier + PurchaseService（事务）
 
-阶段 3（P2）完善
-  ThresholdDiscount、销售记录查看
-  Validator 补齐、JUnit 测试、init-data.sql
+阶段 3（P2）控制台与演示数据       ⏳ 进行中（马玉等）
+  MenuController + ConsoleUtils + Main 接入
+  init-data.sql（含 ≥300 万在售房，答辩 92 折）
+  销售记录查看菜单
 ```
 
-### 7.1 分支与文件归属建议
+### 7.1 模块归属（与团队分工表一致）
 
-| 成员 | 负责包 | 首批文件 |
-|------|--------|----------|
-| A | config + model + dao(Building*) | DBConfig, Building, BuildingDao |
-| B | dao(House*) + model | House, HouseStatus, HouseDao |
-| C | service(Building/House) | BuildingService, HouseService |
-| D | cli | MenuController, ConsoleUtils |
-| E | service(Search/Purchase) + discount | SearchService, PurchaseService, discount 包 |
+| 成员 | 负责包 | 文件 |
+|------|--------|------|
+| 陈辉（开发 A） | config + model + dao + util | DBConfig、实体、三 Dao、IdGenerator |
+| 邓单（开发 B） | service + discount | 四 Service、折扣策略 |
+| 马玉（开发 C） | cli | MenuController、ConsoleUtils、Main 接入 |
 
-实际分工填入 `docs/report/团队分工表.md`。
+实际姓名与学号见 `docs/report/团队分工表.md`。
 
 ---
 
 ## 8. 测试约定
 
-| 层级 | 测试方式 |
-|------|----------|
-| service | JUnit 5，dao 可 Mock 或连测试库 |
-| dao | 集成测试，使用 `building_manos` 测试库或 H2（可选） |
-| cli | 答辩前手工走查脚本（见 `项目计划.md` §6.1） |
+| 层级 | 测试方式 | 进度 |
+|------|----------|------|
+| config / dao / util | 集成/单元测试（`DBConfigTest`、`*DaoTest`、`IdGeneratorTest`） | ✅ |
+| discount | JUnit（`PercentageDiscountTest`、`ThresholdDiscountTest`） | ✅ |
+| service | 可补 JUnit 或联调验证 | ⏳ |
+| cli | 答辩前手工走查 | ⏳ 菜单未实现 |
 
 测试目录：`src/test/java/com/building/manos/`
 
@@ -555,3 +578,5 @@ password=root
 | v0.1 | 2026-07-10 | 初版框架：包结构、类职责、接口签名、菜单结构 |
 | v0.2 | 2026-07-10 | 补充课堂知识点应用、JDBC/异常/Properties 规定 |
 | v0.3 | 2026-07-10 | 补充脚本启动运行架构；修正菜单层调用 service |
+| v0.4 | 2026-07-11 | 折扣改为 PriceTier 档位 |
+| v0.5 | 2026-07-13 | §0 进度：数据层/业务层已完成；cli/Main/init-data 待办；对齐陈辉/邓单分工 |
