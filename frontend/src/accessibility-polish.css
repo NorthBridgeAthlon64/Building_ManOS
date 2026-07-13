@@ -1,0 +1,446 @@
+/* Final contrast and transaction settlement polish. Loaded after all visual themes. */
+:root {
+  --muted: #46536a;
+  --text-secondary: #46536a;
+  --text-tertiary: #59667a;
+}
+
+/* Improve contrast on light surfaces without flattening colored cards. */
+.quick-menu small,
+.project-copy small,
+.project-count small,
+.inventory-name small,
+.inventory-number small,
+.entity-cell small,
+.house-price-block small,
+.house-price-block p,
+.field .help,
+.detail-fact span,
+.asset-note span,
+.receipt-asset > span,
+.receipt-asset > p,
+.receipt-customer > span,
+.receipt-customer > small,
+.mock-data-counts small,
+.stack-node p,
+.checklist-grid small {
+  color: var(--text-secondary);
+}
+
+.panel-header p,
+.panel-body p,
+.filter-panel label > span,
+.advanced-filters label > span,
+.result-count,
+.data-table td,
+.empty-state p,
+.drawer-header p,
+.field label,
+.constraint-note,
+.transaction-section-title p,
+.asset-selector > span,
+.selected-asset-card p,
+.strategy-card p,
+.customer-field small,
+.transaction-success > p {
+  color: var(--text-secondary);
+}
+
+.project-copy small,
+.entity-cell small,
+.house-card-top > small,
+.selected-asset-card small,
+.strategy-card > small,
+.tier-scale > span,
+.customer-field > em {
+  color: var(--text-tertiary);
+}
+
+.data-table .entity-cell strong,
+.selected-asset-card h3,
+.selected-asset-price strong,
+.strategy-card h3,
+.strategy-card > strong,
+.customer-field input,
+.receipt-preview strong {
+  color: var(--hard-ink);
+}
+
+.data-table tbody tr {
+  color: #303c51;
+}
+
+.data-table td:not(.money),
+.data-table td:not(.money) strong {
+  color: #303c51;
+}
+
+.form-field input::placeholder,
+.field input::placeholder,
+.field textarea::placeholder,
+.filter-input::placeholder,
+.filter-search input::placeholder,
+.search-field::placeholder,
+.customer-field input::placeholder,
+.ledger-search input::placeholder {
+  color: #68758a;
+  opacity: 1;
+}
+
+.transaction-steps > span {
+  color: #536077;
+}
+
+.transaction-steps > span.is-active {
+  color: var(--hard-ink);
+}
+
+.tier-scale > span.active {
+  color: var(--flat-cobalt);
+}
+
+/* Preserve readable light text on deliberately saturated surfaces. */
+.app-sidebar .brand-lockup small,
+.app-sidebar .nav-item small,
+.app-sidebar .system-link small,
+.page-intro p,
+.hero-copy > p,
+.hero-interaction-note,
+.metric-card p,
+.metric-card > span,
+.building-card .address,
+.building-card .card-index,
+.building-card .card-facts,
+.building-card .card-facts strong,
+.building-card .card-footer,
+.house-card > p,
+.house-card .house-card-facts,
+.system-status-card p,
+.system-status-card > small,
+.ledger-metrics article span,
+.ledger-metrics article small {
+  color: currentColor;
+}
+
+.app-sidebar .brand-lockup small,
+.app-sidebar .nav-item small,
+.app-sidebar .system-link small,
+.page-intro p,
+.hero-copy > p,
+.hero-interaction-note,
+.metric-card p,
+.metric-card > span {
+  opacity: 0.86;
+}
+
+/* Transaction strategy cards follow the hard-edge architectural system. */
+.strategy-grid {
+  gap: 20px;
+}
+
+.strategy-card {
+  min-height: 252px;
+  padding: 24px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  border-radius: 0;
+  background: var(--flat-cream);
+  box-shadow: 5px 5px 0 var(--hard-ink);
+}
+
+.strategy-card:first-child {
+  background: var(--flat-cyan);
+}
+
+.strategy-card:last-child {
+  background: var(--flat-yellow);
+}
+
+.strategy-card:hover {
+  transform: translate(-2px, -2px);
+  border-color: var(--hard-ink);
+  box-shadow: 8px 8px 0 var(--hard-ink);
+}
+
+.strategy-card.is-selected {
+  border-color: var(--hard-ink);
+  background: var(--flat-coral);
+  box-shadow: 8px 8px 0 var(--hard-ink);
+}
+
+.strategy-card.is-selected,
+.strategy-card.is-selected h3,
+.strategy-card.is-selected p,
+.strategy-card.is-selected > small,
+.strategy-card.is-selected > strong,
+.strategy-card.is-selected > em {
+  color: #fff;
+}
+
+.strategy-card > i {
+  width: 28px;
+  height: 28px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  border-radius: 0;
+  background: var(--flat-yellow);
+}
+
+.strategy-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  background: var(--flat-cream);
+}
+
+.strategy-card > em {
+  color: #145f4d;
+  font-weight: 750;
+}
+
+.tier-scale {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-color: var(--hard-ink);
+}
+
+.tier-scale > b {
+  height: 2px;
+  background: var(--hard-ink);
+}
+
+.tier-scale > span i {
+  width: 30px;
+  height: 30px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  border-radius: 0;
+  background: var(--flat-cream);
+}
+
+.tier-scale > span.active i {
+  color: #fff;
+  border-color: var(--hard-ink);
+  background: var(--flat-cobalt);
+  box-shadow: 3px 3px 0 var(--hard-ink);
+}
+
+/* Price settlement becomes a stack of flat architectural color planes. */
+.settlement-panel {
+  position: sticky;
+  top: 142px;
+  padding: 32px;
+  overflow: hidden;
+  color: #fff;
+  border: 2px solid var(--hard-ink);
+  border-radius: 0;
+  background: var(--flat-cobalt);
+  box-shadow: 10px 10px 0 var(--hard-ink);
+}
+
+.settlement-panel::before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  right: -20px;
+  width: 155px;
+  height: 112px;
+  opacity: 0.2;
+  background:
+    repeating-linear-gradient(90deg, #fff 0 5px, transparent 5px 16px) 12px 30px / 62px 72px no-repeat,
+    repeating-linear-gradient(90deg, #fff 0 5px, transparent 5px 15px) 82px 12px / 62px 90px no-repeat,
+    linear-gradient(var(--flat-yellow), var(--flat-yellow)) 0 20px / 76px 92px no-repeat,
+    linear-gradient(var(--flat-coral), var(--flat-coral)) 76px 0 / 74px 112px no-repeat;
+  pointer-events: none;
+}
+
+.settlement-panel > .eyebrow,
+.settlement-panel > h3,
+.settlement-panel > .settlement-building,
+.settlement-panel > dl,
+.settlement-panel > .final-price,
+.settlement-panel > .settlement-guard,
+.settlement-panel > .settlement-button {
+  position: relative;
+  z-index: 1;
+}
+
+.settlement-panel > .eyebrow {
+  margin-bottom: 8px;
+  color: #fff;
+  opacity: 0.82;
+}
+
+.settlement-panel > h3 {
+  margin: 0 0 30px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.settlement-building {
+  margin-bottom: 20px;
+  padding: 22px;
+  color: #fff;
+  border: 2px solid var(--hard-ink);
+  background: var(--flat-coral);
+  box-shadow: 5px 5px 0 var(--hard-ink);
+}
+
+.settlement-building small,
+.settlement-building strong,
+.settlement-building span {
+  color: #fff;
+}
+
+.settlement-building small,
+.settlement-building span {
+  opacity: 0.84;
+}
+
+.settlement-building strong {
+  margin: 8px 0 6px;
+  font-size: 18px;
+}
+
+.settlement-panel dl {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 20px;
+  padding: 20px 22px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  background: var(--flat-cream);
+}
+
+.settlement-panel dl div {
+  margin: 0;
+  padding-bottom: 12px;
+  color: var(--hard-ink);
+  border-bottom: 1px solid rgba(23, 34, 56, 0.32);
+  font-size: 11px;
+}
+
+.settlement-panel dl div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.settlement-panel .saving {
+  color: #b83d28;
+  font-weight: 800;
+}
+
+.final-price {
+  margin-bottom: 20px;
+  padding: 24px 22px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  background: var(--flat-yellow);
+  box-shadow: 5px 5px 0 var(--hard-ink);
+}
+
+.final-price small,
+.final-price strong,
+.final-price span {
+  color: var(--hard-ink);
+}
+
+.final-price small {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.final-price strong {
+  margin: 10px 0 8px;
+  font-size: clamp(30px, 3vw, 39px);
+  font-weight: 820;
+}
+
+.final-price span {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.settlement-guard {
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  padding: 17px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  border-radius: 0;
+  background: var(--flat-cyan);
+}
+
+.settlement-guard strong,
+.settlement-guard span {
+  color: var(--hard-ink);
+}
+
+.settlement-guard strong {
+  font-size: 10px;
+  font-weight: 820;
+}
+
+.settlement-guard span {
+  margin-top: 5px;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.settlement-button {
+  min-height: 56px;
+  margin-top: 22px;
+  color: #fff;
+  border-color: var(--hard-ink);
+  background: var(--flat-purple);
+  box-shadow: 5px 5px 0 var(--hard-ink);
+  font-size: 13px;
+}
+
+.settlement-button:hover {
+  border-color: var(--hard-ink);
+  background: #8b58c8;
+}
+
+.settlement-button:disabled {
+  color: #2f394c;
+  background: #8c98aa;
+  opacity: 0.72;
+}
+
+.transaction-confirm .money-large {
+  padding: 18px;
+  color: var(--hard-ink);
+  border: 2px solid var(--hard-ink);
+  background: var(--flat-yellow);
+  box-shadow: 5px 5px 0 var(--hard-ink);
+  font-size: 30px;
+}
+
+.irreversible-note {
+  color: var(--hard-ink) !important;
+  border: 2px solid var(--hard-ink);
+  border-radius: 0;
+  background: var(--flat-cyan);
+}
+
+@media (max-width: 1020px) {
+  .settlement-panel {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .strategy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settlement-panel {
+    padding: 25px;
+  }
+}
