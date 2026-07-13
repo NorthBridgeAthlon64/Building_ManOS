@@ -8,7 +8,9 @@
 |-----------|---------|
 | 需求分析 | [requirements/需求分析.md](./requirements/需求分析.md) |
 | 系统设计 | [design/概要设计.md](./design/概要设计.md) |
-| 技术实现 | [design/Java技术框架.md](./design/Java技术框架.md) |
+| 技术实现 | [design/Java技术框架.md](./design/Java技术框架.md) **§0 代码进度** |
+| 数据层计划 | [development/开发A-数据层实施计划.md](./development/开发A-数据层实施计划.md) |
+| 各组任务 | [各组下发指引.md](./各组下发指引.md) |
 | 测试 | [test/测试用例.md](./test/测试用例.md) |
 | 课程报告 | [report/课程设计报告.md](./report/课程设计报告.md) |
 | 团队分工 | [report/团队分工表.md](./report/团队分工表.md) |
