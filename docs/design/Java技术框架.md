@@ -1,7 +1,7 @@
 # Java 技术框架说明
 
 > **读者**：技术组、文档组、PPT 组  
-> **状态**：v0.5（同步 2026-07-13 远程 `main` 代码进度）  
+> **状态**：v0.6（同步 2026-07-13 cli / Main / init-data 完成）  
 > **关联**：[数据库设计.md](./数据库设计.md) | [开发A-数据层实施计划.md](../development/开发A-数据层实施计划.md) | [代码注释规范.md](./代码注释规范.md) | [sql/schema.sql](../../sql/schema.sql)
 
 ---
@@ -17,16 +17,16 @@
 | **dao** | `BuildingDao`、`HouseDao`、`SaleRecordDao` | ✅ | 陈辉 | PreparedStatement；事务重载 `insert(conn)` / `updateStatusSold(conn)`；含 DAO 测试 |
 | **util** | `IdGenerator` | ✅ | 陈辉 | B/H/S 前缀主键；含单元测试 |
 | **discount** | `DiscountStrategy`、`PriceTier`、`PercentageDiscount`、`ThresholdDiscount` | ✅ | 邓单 | 按原价三档；含 JUnit |
-| **service** | `BuildingService`、`HouseService`、`SearchService`、`PurchaseService` | ✅ | 邓单 | CRUD、5 种查询、购买 JDBC 事务 |
-| **cli** | `MenuController`、`ConsoleUtils` | ⏳ | 马玉（计划） | 仅有 `.gitkeep`，**尚未实现菜单** |
-| **Main** | `Main.java` | ⏳ | 技术组 | 仍为占位输出，未启动菜单 |
+| **service** | `BuildingService`、`HouseService`、`SearchService`、`PurchaseService`、`SaleRecordService` | ✅ | 邓单 | CRUD、5 种查询、购买 JDBC 事务、成交记录查询 |
+| **cli** | `MenuController`、`ConsoleUtils` | ✅ | 马玉 | 主菜单 5 项 + 子菜单，只调 service |
+| **Main** | `Main.java` | ✅ | 马玉 | 启动 `MenuController.run()` |
 | **sql** | `schema.sql` | ✅ | — | 含 `uk_sale_house`（一套房一条成交记录） |
-| **sql** | `init-data.sql` | ⏳ | — | **演示数据尚未写入**（INSERT 仍注释） |
+| **sql** | `init-data.sql` | ✅ | — | 2 楼盘、7 套房，含 ≥300 万在售演示样本 |
 
 **当前结论**：
 
-- **数据层 + 业务层 + 折扣已打通**（可通过测试 / 代码联调验证）。
-- **控制台菜单未完成** → 尚不能答辩现场演示；下一优先级：`cli` + `Main` + `init-data.sql`。
+- **全栈已打通**：`cli` → `service` → `dao` → MySQL，可通过 `scripts/run.ps1` 答辩演示。
+- 演示路径：查在售 → 购买 `H202607130003`（320 万）档位比例 92 折 → 查已售 / 销售记录。
 - 购买事务：`PurchaseService` 使用 `HouseDao.updateStatusSold(Connection, …)` + `SaleRecordDao.insert(Connection, …)`。
 
 ---
@@ -360,6 +360,7 @@ scripts/run.ps1（或 run.sh）
 | 脚本 | 作用 |
 |------|------|
 | `scripts/run.ps1` | Windows：编译并启动 |
+| `scripts/setup-db.ps1` | Windows：JDBC 执行 schema + init-data |
 | `scripts/run.sh` | Linux/macOS：编译并启动 |
 
 答辩前约定：
@@ -419,10 +420,10 @@ Main **只做启动**，不写菜单逻辑（菜单全在 `cli` 包）。
   BuildingService / HouseService / SearchService
   DiscountStrategy + PriceTier + PurchaseService（事务）
 
-阶段 3（P2）控制台与演示数据       ⏳ 进行中（马玉等）
+阶段 3（P2）控制台与演示数据       ✅ 已完成（马玉）
   MenuController + ConsoleUtils + Main 接入
   init-data.sql（含 ≥300 万在售房，答辩 92 折）
-  销售记录查看菜单
+  销售记录查看菜单（SaleRecordService）
 ```
 
 ### 7.1 模块归属（与团队分工表一致）
@@ -443,8 +444,8 @@ Main **只做启动**，不写菜单逻辑（菜单全在 `cli` 包）。
 |------|----------|------|
 | config / dao / util | 集成/单元测试（`DBConfigTest`、`*DaoTest`、`IdGeneratorTest`） | ✅ |
 | discount | JUnit（`PercentageDiscountTest`、`ThresholdDiscountTest`） | ✅ |
-| service | 可补 JUnit 或联调验证 | ⏳ |
-| cli | 答辩前手工走查 | ⏳ 菜单未实现 |
+| service | 可补 JUnit 或联调验证 | ✅ BuildingServiceTest、PurchaseServiceTest |
+| cli | 答辩前手工走查 | ✅ 菜单已实现；见测试用例 §4 |
 
 测试目录：`src/test/java/com/building/manos/`
 
@@ -580,3 +581,5 @@ password=root
 | v0.3 | 2026-07-10 | 补充脚本启动运行架构；修正菜单层调用 service |
 | v0.4 | 2026-07-11 | 折扣改为 PriceTier 档位 |
 | v0.5 | 2026-07-13 | §0 进度：数据层/业务层已完成；cli/Main/init-data 待办；对齐陈辉/邓单分工 |
+| v0.6 | 2026-07-13 | cli/Main/init-data/SaleRecordService 完成；系统可答辩演示 |
+| v0.7 | 2026-07-13 | 自检：Service 测试、PurchasePreview、setup-db.ps1、init-data 补 sale_record |

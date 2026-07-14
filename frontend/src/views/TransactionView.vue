@@ -1,34 +1,55 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowRight, BadgeCheck, Building2, Check, CircleDollarSign, LockKeyhole, Percent, ReceiptText, ShieldCheck, UserRound } from '@lucide/vue'
-import { mockStore } from '../store/mockStore'
-import type { DiscountType, SaleRecord } from '../types'
+import { dataStore } from '../store/dataStore'
+import type { DiscountPreview, DiscountType, SaleRecord } from '../types'
 
 const route = useRoute()
 const router = useRouter()
-const state = mockStore.state
+const state = dataStore.state
 const availableHouses = computed(() => state.houses.filter((house) => house.status === 'ON_SALE'))
-const initialId = String(route.query.houseId ?? availableHouses.value[0]?.id ?? '')
-const selectedHouseId = ref(initialId)
+const selectedHouseId = ref('')
 const strategy = ref<DiscountType>('PERCENTAGE')
 const customerName = ref('')
 const confirmOpen = ref(false)
 const receipt = ref<SaleRecord | null>(null)
 const error = ref('')
+const percentagePreview = ref<DiscountPreview | null>(null)
+const thresholdPreview = ref<DiscountPreview | null>(null)
+const loadingPreview = ref(false)
 
-const selectedHouse = computed(() => mockStore.houseById(selectedHouseId.value))
-const selectedBuilding = computed(() => selectedHouse.value ? mockStore.buildingById(selectedHouse.value.buildingId) : undefined)
-const preview = computed(() => selectedHouse.value ? mockStore.discountPreview(selectedHouse.value.totalPrice, strategy.value) : null)
-const percentagePreview = computed(() => selectedHouse.value ? mockStore.discountPreview(selectedHouse.value.totalPrice, 'PERCENTAGE') : null)
-const thresholdPreview = computed(() => selectedHouse.value ? mockStore.discountPreview(selectedHouse.value.totalPrice, 'THRESHOLD') : null)
+const selectedHouse = computed(() => dataStore.houseById(selectedHouseId.value))
+const selectedBuilding = computed(() => selectedHouse.value ? dataStore.buildingById(selectedHouse.value.buildingId) : undefined)
+const preview = computed(() => strategy.value === 'PERCENTAGE' ? percentagePreview.value : thresholdPreview.value)
+
+async function refreshPreviews() {
+  if (!selectedHouseId.value) {
+    percentagePreview.value = null
+    thresholdPreview.value = null
+    return
+  }
+  loadingPreview.value = true
+  try {
+    const [pct, thr] = await Promise.all([
+      dataStore.discountPreview(selectedHouseId.value, 'PERCENTAGE'),
+      dataStore.discountPreview(selectedHouseId.value, 'THRESHOLD'),
+    ])
+    percentagePreview.value = pct
+    thresholdPreview.value = thr
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '预览失败'
+  } finally {
+    loadingPreview.value = false
+  }
+}
 
 function money(value: number, compact = false) {
   if (compact) return `${(value / 10_000).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} 万`
   return `¥${value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
-function submit() {
+async function submit() {
   error.value = ''
   if (!selectedHouse.value || !preview.value) {
     error.value = '请先选择一套在售房屋。'
@@ -40,7 +61,7 @@ function submit() {
     return
   }
   try {
-    receipt.value = mockStore.purchase(selectedHouse.value.id, strategy.value, customerName.value)
+    receipt.value = await dataStore.purchase(selectedHouse.value.id, strategy.value, customerName.value)
     confirmOpen.value = false
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : '成交失败'
@@ -54,27 +75,40 @@ function anotherTransaction() {
   strategy.value = 'PERCENTAGE'
   selectedHouseId.value = availableHouses.value[0]?.id ?? ''
 }
+
+watch(selectedHouseId, () => { void refreshPreviews() })
+
+onMounted(async () => {
+  try {
+    if (!state.loaded) await dataStore.loadAll()
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '加载失败'
+  }
+  const fromQuery = String(route.query.houseId ?? '')
+  selectedHouseId.value = fromQuery || availableHouses.value[0]?.id || ''
+  await refreshPreviews()
+})
 </script>
 
 <template>
   <div>
     <section class="page-intro">
-      <div><span class="eyebrow">TRANSACTION DESK</span><h2>完成一笔可信成交</h2><p>资产核对、优惠比较、客户确认和成交回执在同一个工作台内完成，所有操作仅作用于 Mock 数据。</p></div>
-      <span class="status-badge status-mock"><LockKeyhole :size="12" /> MOCK TRANSACTION</span>
+      <div><span class="eyebrow">TRANSACTION DESK</span><h2>完成一笔可信成交</h2><p>资产核对、优惠比较、客户确认和成交回执在同一个工作台内完成，数据写入 MySQL。</p></div>
+      <span class="status-badge status-on-sale"><LockKeyhole :size="12" /> LIVE API</span>
     </section>
 
     <section v-if="receipt" class="transaction-success panel">
       <div class="success-architecture" aria-hidden="true"><i /><i /><i /></div>
       <BadgeCheck :size="46" :stroke-width="1.4" />
       <span class="eyebrow">TRANSACTION ARCHIVED</span>
-      <h2>模拟成交已归档</h2>
-      <p>{{ selectedBuilding?.name }} · {{ selectedHouse?.buildingNo }}栋 {{ selectedHouse?.roomNo }} 已更新为“已售”，并生成一份本地成交票据。</p>
+      <h2>成交已归档</h2>
+      <p>{{ selectedBuilding?.name }} · {{ selectedHouse?.buildingNo }}栋 {{ selectedHouse?.roomNo }} 已更新为“已售”，并生成成交票据。</p>
       <div class="receipt-preview">
         <span><small>成交编号</small><strong>{{ receipt.id }}</strong></span>
         <span><small>客户</small><strong>{{ receipt.customerName }}</strong></span>
         <span><small>最终实付</small><strong class="money">{{ money(receipt.finalPrice) }}</strong></span>
       </div>
-      <div class="transaction-success-actions"><button class="button" @click="anotherTransaction">继续模拟成交</button><button class="button button-primary" @click="router.push({ path: '/sales', query: { houseId: receipt.houseId } })"><ReceiptText :size="15" /> 查看成交票据</button></div>
+      <div class="transaction-success-actions"><button class="button" @click="anotherTransaction">继续成交</button><button class="button button-primary" @click="router.push({ path: '/sales', query: { houseId: receipt.houseId } })"><ReceiptText :size="15" /> 查看成交票据</button></div>
     </section>
 
     <section v-else-if="selectedHouse" class="transaction-layout">
@@ -85,7 +119,7 @@ function anotherTransaction() {
 
         <article class="panel transaction-section">
           <div class="transaction-section-title"><span>01</span><div><h3>选择并核对在售资产</h3><p>已售房屋不会出现在可选列表中。</p></div></div>
-          <label class="asset-selector"><span>在售房源</span><select v-model="selectedHouseId"><option v-for="house in availableHouses" :key="house.id" :value="house.id">{{ mockStore.buildingById(house.buildingId)?.name }} · {{ house.buildingNo }}栋 {{ house.roomNo }} · {{ money(house.totalPrice, true) }}</option></select></label>
+          <label class="asset-selector"><span>在售房源</span><select v-model="selectedHouseId"><option v-for="house in availableHouses" :key="house.id" :value="house.id">{{ dataStore.buildingById(house.buildingId)?.name }} · {{ house.buildingNo }}栋 {{ house.roomNo }} · {{ money(house.totalPrice, true) }}</option></select></label>
           <div class="selected-asset-card">
             <div class="selected-asset-mark"><Building2 :size="26" /></div>
             <div><small>{{ selectedHouse.id }}</small><h3>{{ selectedBuilding?.name }}</h3><p>{{ selectedHouse.buildingNo }}栋 · {{ selectedHouse.roomNo }} · {{ selectedHouse.area.toFixed(2) }} ㎡</p></div>
@@ -94,7 +128,7 @@ function anotherTransaction() {
         </article>
 
         <article class="panel transaction-section">
-          <div class="transaction-section-title"><span>02</span><div><h3>比较折扣策略</h3><p>系统按原价档位自动选择对应优惠参数。</p></div></div>
+          <div class="transaction-section-title"><span>02</span><div><h3>比较折扣策略</h3><p>{{ loadingPreview ? '正在计算优惠…' : '系统按原价档位自动选择对应优惠参数。' }}</p></div></div>
           <div class="strategy-grid">
             <button class="strategy-card" :class="{ 'is-selected': strategy === 'PERCENTAGE' }" @click="strategy = 'PERCENTAGE'">
               <span class="strategy-icon"><Percent :size="22" /></span><i v-if="strategy === 'PERCENTAGE'"><Check :size="13" /></i>
@@ -115,7 +149,7 @@ function anotherTransaction() {
         </article>
 
         <article class="panel transaction-section">
-          <div class="transaction-section-title"><span>03</span><div><h3>填写客户并确认</h3><p>客户姓名将出现在不可编辑的模拟成交票据上。</p></div></div>
+          <div class="transaction-section-title"><span>03</span><div><h3>填写客户并确认</h3><p>客户姓名将出现在不可编辑的成交票据上。</p></div></div>
           <label class="customer-field"><UserRound :size="18" /><span><small>客户姓名</small><input v-model="customerName" maxlength="50" placeholder="输入成交客户姓名" /></span><em>{{ customerName.length }}/50</em></label>
           <p v-if="error" class="form-error">{{ error }}</p>
         </article>
@@ -127,14 +161,14 @@ function anotherTransaction() {
         <dl><div><dt>房屋原价</dt><dd>{{ money(selectedHouse.totalPrice) }}</dd></div><div><dt>{{ strategy === 'PERCENTAGE' ? '比例优惠' : '满额减免' }}</dt><dd class="saving">− {{ money(preview?.saving ?? 0) }}</dd></div></dl>
         <div class="final-price"><small>最终实付</small><strong>{{ money(preview?.finalPrice ?? 0) }}</strong><span>{{ preview?.formula }}</span></div>
         <div class="settlement-guard"><ShieldCheck :size="18" /><p><strong>成交保护</strong><span>确认后房屋状态将锁定为已售，并生成唯一票据。</span></p></div>
-        <button class="button button-accent settlement-button" :disabled="!customerName.trim()" @click="confirmOpen = true">确认成交 {{ money(preview?.finalPrice ?? 0, true) }} <ArrowRight :size="16" /></button>
+        <button class="button button-accent settlement-button" :disabled="!customerName.trim() || !preview" @click="confirmOpen = true">确认成交 {{ money(preview?.finalPrice ?? 0, true) }} <ArrowRight :size="16" /></button>
       </aside>
     </section>
 
-    <section v-else class="panel empty-state"><div><div class="empty-blueprint" /><h3>没有可成交的房屋</h3><p>当前 Mock 数据中不存在在售资产，可以先到房源中心新增一套房屋。</p><button class="button button-primary" @click="router.push({ path: '/houses', query: { create: '1' } })">新增房屋</button></div></section>
+    <section v-else class="panel empty-state"><div><div class="empty-blueprint" /><h3>没有可成交的房屋</h3><p>当前不存在在售资产，可以先到房源中心新增一套房屋。</p><button class="button button-primary" @click="router.push({ path: '/houses', query: { create: '1' } })">新增房屋</button></div></section>
 
     <div v-if="confirmOpen && selectedHouse && preview" class="modal-backdrop" @click.self="confirmOpen = false">
-      <div class="modal-card transaction-confirm"><span class="eyebrow">FINAL CONFIRMATION</span><h3>确认归档这笔成交？</h3><p>“{{ selectedBuilding?.name }} · {{ selectedHouse.buildingNo }}栋 {{ selectedHouse.roomNo }}”将变更为已售，客户为“{{ customerName }}”，模拟实付金额为：</p><strong class="money-large">{{ money(preview.finalPrice) }}</strong><p class="irreversible-note"><LockKeyhole :size="14" /> 成交记录在界面中不可编辑或删除。</p><div class="modal-actions"><button class="button" @click="confirmOpen = false">返回核对</button><button class="button button-accent" @click="submit">确认成交</button></div></div>
+      <div class="modal-card transaction-confirm"><span class="eyebrow">FINAL CONFIRMATION</span><h3>确认归档这笔成交？</h3><p>“{{ selectedBuilding?.name }} · {{ selectedHouse.buildingNo }}栋 {{ selectedHouse.roomNo }}”将变更为已售，客户为“{{ customerName }}”，实付金额为：</p><strong class="money-large">{{ money(preview.finalPrice) }}</strong><p class="irreversible-note"><LockKeyhole :size="14" /> 成交记录写入数据库后不可编辑或删除。</p><div class="modal-actions"><button class="button" @click="confirmOpen = false">返回核对</button><button class="button button-accent" @click="submit">确认成交</button></div></div>
     </div>
   </div>
 </template>

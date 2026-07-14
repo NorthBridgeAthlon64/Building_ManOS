@@ -1,5 +1,6 @@
 # Build
 target/
+.tools/
 out/
 build/
 *.class

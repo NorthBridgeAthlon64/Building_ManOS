@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ArrowRight,
@@ -14,10 +14,11 @@ import {
   TrendingUp,
 } from '@lucide/vue'
 import CityHouseScene from '../components/CityHouseSceneV2.vue'
-import { mockStore } from '../store/mockStore'
+import { dataStore } from '../store/dataStore'
 
 const router = useRouter()
-const state = mockStore.state
+const state = dataStore.state
+const loadError = ref('')
 
 const onSaleCount = computed(() => state.houses.filter((house) => house.status === 'ON_SALE').length)
 const soldCount = computed(() => state.houses.filter((house) => house.status === 'SOLD').length)
@@ -26,7 +27,7 @@ const recentSales = computed(() => state.sales.slice(0, 4))
 
 const buildingSummary = computed(() =>
   state.buildings.map((building, index) => {
-    const houses = mockStore.housesForBuilding(building.id)
+    const houses = dataStore.housesForBuilding(building.id)
     const onSale = houses.filter((house) => house.status === 'ON_SALE').length
     return {
       ...building,
@@ -39,11 +40,11 @@ const buildingSummary = computed(() =>
 )
 
 function buildingName(id: string) {
-  return mockStore.buildingById(id)?.name ?? '未知楼盘'
+  return dataStore.buildingById(id)?.name ?? '未知楼盘'
 }
 
 function houseLabel(houseId: string) {
-  const house = mockStore.houseById(houseId)
+  const house = dataStore.houseById(houseId)
   return house ? `${buildingName(house.buildingId)} · ${house.buildingNo}栋 ${house.roomNo}` : houseId
 }
 
@@ -59,10 +60,19 @@ function formatDate(value: string) {
     minute: '2-digit',
   }).format(new Date(value))
 }
+
+onMounted(async () => {
+  try {
+    if (!state.loaded) await dataStore.loadAll()
+  } catch (cause) {
+    loadError.value = cause instanceof Error ? cause.message : '加载失败'
+  }
+})
 </script>
 
 <template>
   <div class="modern-dashboard">
+    <p v-if="loadError" class="form-error">{{ loadError }}</p>
     <section class="modern-hero">
       <div class="hero-copy">
         <div class="hero-kicker">

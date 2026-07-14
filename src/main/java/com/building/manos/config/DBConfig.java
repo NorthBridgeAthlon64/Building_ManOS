@@ -18,7 +18,8 @@ public final class DBConfig {
     private static final String CONFIG_FILE = "database.properties";
     private static final String DEFAULT_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/building_manos"
-            + "?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false";
+            + "?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai"
+            + "&useSSL=false&allowPublicKeyRetrieval=true";
     private static final String DEFAULT_USER = "root";
     private static final String DEFAULT_PASSWORD = "root";
     private static final Properties PROPERTIES = loadProperties();

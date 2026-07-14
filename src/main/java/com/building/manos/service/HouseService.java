@@ -156,6 +156,20 @@ public class HouseService {
         }
     }
 
+    /**
+     * 查询全部房屋列表。
+     *
+     * @return 房屋列表，无数据时返回空列表
+     * @throws IllegalStateException 数据库操作失败时
+     */
+    public List<House> listAll() {
+        try {
+            return houseDao.findAll();
+        } catch (SQLException e) {
+            throw mapSqlException(e);
+        }
+    }
+
     private void ensureBuildingExists(String buildingId) {
         try {
             if (buildingDao.findById(buildingId) == null) {

@@ -2,20 +2,21 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { FileLock2, ReceiptText, Search, ShieldCheck, X } from '@lucide/vue'
-import { mockStore } from '../store/mockStore'
+import { dataStore } from '../store/dataStore'
 import type { SaleRecord } from '../types'
 
 const route = useRoute()
-const state = mockStore.state
+const state = dataStore.state
 const search = ref(String(route.query.houseId ?? ''))
 const detail = ref<SaleRecord | null>(null)
+const error = ref('')
 
 const filtered = computed(() => {
   const keyword = search.value.trim().toLowerCase()
   if (!keyword) return state.sales
   return state.sales.filter((sale) => {
-    const house = mockStore.houseById(sale.houseId)
-    const building = house ? mockStore.buildingById(house.buildingId) : undefined
+    const house = dataStore.houseById(sale.houseId)
+    const building = house ? dataStore.buildingById(house.buildingId) : undefined
     return [sale.id, sale.houseId, sale.customerName, building?.name ?? '', house?.buildingNo ?? '', house?.roomNo ?? ''].some((value) => value.toLowerCase().includes(keyword))
   })
 })
@@ -25,8 +26,8 @@ const average = computed(() => filtered.value.length ? total.value / filtered.va
 const saving = computed(() => filtered.value.reduce((sum, item) => sum + item.originalPrice - item.finalPrice, 0))
 
 function houseLabel(houseId: string) {
-  const house = mockStore.houseById(houseId)
-  const building = house ? mockStore.buildingById(house.buildingId) : undefined
+  const house = dataStore.houseById(houseId)
+  const building = house ? dataStore.buildingById(house.buildingId) : undefined
   return house ? `${building?.name ?? '未知楼盘'} · ${house.buildingNo}栋 ${house.roomNo}` : houseId
 }
 
@@ -45,7 +46,12 @@ function discountLabel(sale: SaleRecord) {
   return sale.discountType === 'PERCENTAGE' ? `比例 ${(sale.discountValue * 100).toFixed(0)}%` : `满减 ${money(sale.discountValue, true)}`
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    if (!state.loaded) await dataStore.loadAll()
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '加载失败'
+  }
   const houseId = String(route.query.houseId ?? '')
   if (houseId) detail.value = state.sales.find((sale) => sale.houseId === houseId) ?? null
 })
@@ -58,6 +64,8 @@ onMounted(() => {
       <span class="ledger-lock"><FileLock2 :size="16" /> 只读记录</span>
     </section>
 
+    <p v-if="error" class="form-error">{{ error }}</p>
+
     <section class="ledger-metrics">
       <article><span>成交笔数</span><strong>{{ filtered.length.toString().padStart(2, '0') }}</strong><small>TRANSACTIONS</small></article>
       <article><span>累计实付</span><strong>{{ money(total, true) }}</strong><small>CLOSED VOLUME</small></article>
@@ -67,7 +75,7 @@ onMounted(() => {
 
     <section class="panel ledger-panel">
       <div class="panel-header ledger-header">
-        <div><h3>成交明细</h3><p>按照模拟成交时间倒序归档</p></div>
+        <div><h3>成交明细</h3><p>按照成交时间倒序归档（MySQL）</p></div>
         <label class="ledger-search"><Search :size="16" /><input v-model="search" placeholder="搜索成交号、房屋、客户" /></label>
       </div>
       <div v-if="filtered.length" class="data-table-wrap">
@@ -91,7 +99,7 @@ onMounted(() => {
 
     <div v-if="detail" class="drawer-backdrop" @click.self="detail = null">
       <aside class="drawer sale-drawer">
-        <header class="drawer-header"><div><span class="eyebrow">SEALED TRANSACTION</span><h2>成交票据</h2><p>Mock 数据中的只读归档记录。</p></div><button class="icon-button" aria-label="关闭" @click="detail = null"><X :size="18" /></button></header>
+        <header class="drawer-header"><div><span class="eyebrow">SEALED TRANSACTION</span><h2>成交票据</h2><p>数据库中的只读归档记录。</p></div><button class="icon-button" aria-label="关闭" @click="detail = null"><X :size="18" /></button></header>
         <div class="sale-seal"><ReceiptText :size="28" /><span>BUILDING MANOS</span><strong>TRANSACTION SEALED</strong><small>{{ detail.id }}</small></div>
         <div class="receipt-asset"><span>成交资产</span><h3>{{ houseLabel(detail.houseId) }}</h3><p>{{ detail.houseId }} · {{ formatDate(detail.soldAt, true) }}</p></div>
         <dl class="receipt-prices">
@@ -100,7 +108,7 @@ onMounted(() => {
           <div><dt>优惠金额</dt><dd class="saving">− {{ money(detail.originalPrice - detail.finalPrice) }}</dd></div>
           <div class="receipt-total"><dt>最终实付</dt><dd>{{ money(detail.finalPrice) }}</dd></div>
         </dl>
-        <div class="receipt-customer"><span>成交客户</span><strong>{{ detail.customerName }}</strong><small>本票据仅用于前端概念演示</small></div>
+        <div class="receipt-customer"><span>成交客户</span><strong>{{ detail.customerName }}</strong><small>一房一条成交（uk_sale_house）</small></div>
         <p class="constraint-note"><ShieldCheck :size="14" /> 一房一成交：该记录无编辑与删除入口。</p>
       </aside>
     </div>

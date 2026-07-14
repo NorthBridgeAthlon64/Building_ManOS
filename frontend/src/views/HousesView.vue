@@ -2,12 +2,12 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Calculator, Grid2X2, House as HouseIcon, List, Pencil, Plus, Search, ShoppingBag, Trash2, X } from '@lucide/vue'
-import { mockStore } from '../store/mockStore'
+import { dataStore } from '../store/dataStore'
 import type { House } from '../types'
 
 const route = useRoute()
 const router = useRouter()
-const state = mockStore.state
+const state = dataStore.state
 const view = ref<'table' | 'grid'>('table')
 const editorOpen = ref(false)
 const editingId = ref<string | null>(null)
@@ -28,7 +28,7 @@ const filters = reactive({
 const draft = reactive({ buildingId: '', buildingNo: '', roomNo: '', area: 0, unitPrice: 0 })
 
 const filtered = computed(() => state.houses.filter((house) => {
-  const building = mockStore.buildingById(house.buildingId)
+  const building = dataStore.buildingById(house.buildingId)
   const keyword = filters.keyword.trim().toLowerCase()
   const matchesKeyword = !keyword || [building?.name ?? '', house.buildingNo, house.roomNo, house.id].some((value) => value.toLowerCase().includes(keyword))
   return matchesKeyword
@@ -43,7 +43,7 @@ const filtered = computed(() => state.houses.filter((house) => {
 const previewTotal = computed(() => Number(draft.area || 0) * Number(draft.unitPrice || 0))
 
 function buildingName(id: string) {
-  return mockStore.buildingById(id)?.name ?? '未知楼盘'
+  return dataStore.buildingById(id)?.name ?? '未知楼盘'
 }
 
 function formatMoney(value: number, precise = false) {
@@ -67,14 +67,14 @@ function openEdit(house: House) {
   editorOpen.value = true
 }
 
-function save() {
+async function save() {
   error.value = ''
   if (!draft.buildingId || !draft.buildingNo.trim() || !draft.roomNo.trim() || draft.area <= 0 || draft.unitPrice <= 0) {
     error.value = '请选择楼盘，并填写有效的楼号、房号、面积和单价。'
     return
   }
   try {
-    mockStore.saveHouse({
+    await dataStore.saveHouse({
       id: editingId.value ?? undefined,
       buildingId: draft.buildingId,
       buildingNo: draft.buildingNo.trim(),
@@ -89,10 +89,10 @@ function save() {
   }
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (!deleteTarget.value) return
   try {
-    mockStore.removeHouse(deleteTarget.value.id)
+    await dataStore.removeHouse(deleteTarget.value.id)
     deleteTarget.value = null
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : '删除失败'
@@ -104,7 +104,12 @@ function clearFilters() {
   Object.assign(filters, { keyword: '', buildingNo: '', minPrice: null, maxPrice: null, minArea: null, maxArea: null, status: 'ALL' })
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    if (!state.loaded) await dataStore.loadAll()
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '加载失败'
+  }
   if (route.query.create === '1') openCreate()
 })
 </script>

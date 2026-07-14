@@ -2,11 +2,11 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowRight, Building2, Grid2X2, List, MapPin, Pencil, Plus, Trash2, X } from '@lucide/vue'
-import { mockStore } from '../store/mockStore'
+import { dataStore } from '../store/dataStore'
 import type { Building } from '../types'
 
 const route = useRoute()
-const state = mockStore.state
+const state = dataStore.state
 const search = ref('')
 const view = ref<'grid' | 'table'>('grid')
 const editorOpen = ref(false)
@@ -14,6 +14,7 @@ const editingId = ref<string | null>(null)
 const detail = ref<Building | null>(null)
 const deleteTarget = ref<Building | null>(null)
 const error = ref('')
+const saving = ref(false)
 
 const draft = reactive({ name: '', landArea: 0, address: '', developer: '', remark: '' })
 
@@ -24,7 +25,7 @@ const filtered = computed(() => {
 })
 
 function houseStats(buildingId: string) {
-  const houses = mockStore.housesForBuilding(buildingId)
+  const houses = dataStore.housesForBuilding(buildingId)
   const onSale = houses.filter((house) => house.status === 'ON_SALE').length
   return { total: houses.length, onSale, sold: houses.length - onSale }
 }
@@ -50,28 +51,35 @@ function openEdit(building: Building) {
   editorOpen.value = true
 }
 
-function save() {
+async function save() {
   error.value = ''
   if (!draft.name.trim() || !draft.address.trim() || draft.landArea <= 0) {
     error.value = '请填写楼盘名称、有效占地面积和地址。'
     return
   }
-  mockStore.saveBuilding({
-    id: editingId.value ?? undefined,
-    name: draft.name.trim(),
-    landArea: Number(draft.landArea),
-    address: draft.address.trim(),
-    developer: draft.developer.trim(),
-    remark: draft.remark.trim(),
-  })
-  editorOpen.value = false
+  saving.value = true
+  try {
+    await dataStore.saveBuilding({
+      id: editingId.value ?? undefined,
+      name: draft.name.trim(),
+      landArea: Number(draft.landArea),
+      address: draft.address.trim(),
+      developer: draft.developer.trim(),
+      remark: draft.remark.trim(),
+    })
+    editorOpen.value = false
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '保存失败'
+  } finally {
+    saving.value = false
+  }
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (!deleteTarget.value) return
   error.value = ''
   try {
-    mockStore.removeBuilding(deleteTarget.value.id)
+    await dataStore.removeBuilding(deleteTarget.value.id)
     deleteTarget.value = null
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : '删除失败'
@@ -83,7 +91,12 @@ function formatArea(value: number) {
   return `${value.toLocaleString('zh-CN')} ㎡`
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    if (!state.loaded) await dataStore.loadAll()
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '加载失败'
+  }
   if (route.query.create === '1') openCreate()
 })
 </script>
@@ -102,6 +115,7 @@ onMounted(() => {
     </section>
 
     <div v-if="error" class="form-error building-page-error">{{ error }}</div>
+    <div v-if="state.loading" class="form-error building-page-error">正在从 API 加载数据…</div>
 
     <div class="toolbar">
       <div class="toolbar-group">
@@ -160,7 +174,7 @@ onMounted(() => {
     <div v-if="editorOpen" class="drawer-backdrop" @click.self="editorOpen = false">
       <aside class="drawer" aria-label="楼盘编辑抽屉">
         <header class="drawer-header">
-          <div><span class="eyebrow">BUILDING PROFILE</span><h2>{{ editingId ? '编辑楼盘' : '建立楼盘档案' }}</h2><p>编号与创建时间由 Mock 数据层自动生成。</p></div>
+          <div><span class="eyebrow">BUILDING PROFILE</span><h2>{{ editingId ? '编辑楼盘' : '建立楼盘档案' }}</h2><p>编号由后端 IdGenerator 生成，数据写入 MySQL。</p></div>
           <button class="icon-button" aria-label="关闭" @click="editorOpen = false"><X :size="18" /></button>
         </header>
         <div class="form-grid">
@@ -171,7 +185,7 @@ onMounted(() => {
           <div class="field is-full"><label>项目备注</label><textarea v-model="draft.remark" placeholder="记录项目定位、景观或资产备注" /></div>
         </div>
         <p v-if="error" class="form-error">{{ error }}</p>
-        <footer class="drawer-footer"><button class="button" @click="editorOpen = false">取消</button><button class="button button-primary" @click="save">保存楼盘</button></footer>
+        <footer class="drawer-footer"><button class="button" @click="editorOpen = false">取消</button><button class="button button-primary" :disabled="saving" @click="save">{{ saving ? '保存中…' : '保存楼盘' }}</button></footer>
       </aside>
     </div>
 
@@ -199,7 +213,7 @@ onMounted(() => {
     </div>
 
     <div v-if="deleteTarget" class="modal-backdrop" @click.self="deleteTarget = null">
-      <div class="modal-card"><h3>删除楼盘档案？</h3><p>将删除“{{ deleteTarget.name }}（{{ deleteTarget.id }}）”。只有没有关联房屋的楼盘可以删除，此操作仅影响本地 Mock 数据。</p><div class="modal-actions"><button class="button" @click="deleteTarget = null">取消</button><button class="button button-danger" @click="confirmDelete">确认删除</button></div></div>
+      <div class="modal-card"><h3>删除楼盘档案？</h3><p>将删除“{{ deleteTarget.name }}（{{ deleteTarget.id }}）”。只有没有关联房屋的楼盘可以删除，此操作写入 MySQL。</p><div class="modal-actions"><button class="button" @click="deleteTarget = null">取消</button><button class="button button-danger" @click="confirmDelete">确认删除</button></div></div>
     </div>
   </div>
 </template>

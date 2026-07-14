@@ -130,6 +130,21 @@ public class HouseDao {
     }
 
     /**
+     * 查询全部房屋，按楼盘、楼号、房号排序。
+     *
+     * @return 房屋列表，无结果时返回空列表
+     * @throws SQLException 数据库访问失败时
+     */
+    public List<House> findAll() throws SQLException {
+        String sql = "SELECT " + COLUMNS
+                + " FROM house ORDER BY building_id, building_no, room_no";
+        try (Connection connection = DBConfig.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            return executeListQuery(statement);
+        }
+    }
+
+    /**
      * 查询指定楼盘下的全部房屋。
      *
      * @param buildingId 楼盘主键，非空

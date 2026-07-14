@@ -37,6 +37,7 @@ export interface SaleRecord {
 export interface DiscountPreview {
   type: DiscountType
   value: number
+  originalPrice?: number
   finalPrice: number
   saving: number
   tierLabel: string
