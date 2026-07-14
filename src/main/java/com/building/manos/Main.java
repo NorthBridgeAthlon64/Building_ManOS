@@ -1,10 +1,20 @@
 package com.building.manos;
 
+import com.building.manos.cli.MenuController;
+import com.building.manos.dao.BuildingDao;
+import com.building.manos.dao.HouseDao;
+import com.building.manos.dao.SaleRecordDao;
+import com.building.manos.service.BuildingService;
+import com.building.manos.service.HouseService;
+import com.building.manos.service.PurchaseService;
+import com.building.manos.service.SaleRecordService;
+import com.building.manos.service.SearchService;
+
 /**
- * 房屋销售管理系统程序入口，启动控制台主菜单。
+ * 房屋销售管理系统程序入口，组装业务服务并启动控制台主菜单。
  *
- * @author 技术组
- * @since 2026-07-10
+ * @author 马玉
+ * @since 2026-07-14
  */
 public class Main {
 
@@ -14,8 +24,22 @@ public class Main {
      * @param args 命令行参数（本系统未使用）
      */
     public static void main(String[] args) {
-        System.out.println("Building ManOS — 房屋销售管理系统");
-        System.out.println("控制台程序 | MySQL 数据库 | 分层架构");
-        System.out.println("项目骨架已就绪，待技术组实现各层业务逻辑。");
+        try {
+            BuildingDao buildingDao = new BuildingDao();
+            HouseDao houseDao = new HouseDao();
+            SaleRecordDao saleRecordDao = new SaleRecordDao();
+
+            MenuController controller = new MenuController(
+                    new BuildingService(buildingDao, houseDao),
+                    new HouseService(houseDao, buildingDao),
+                    new SearchService(houseDao),
+                    new PurchaseService(houseDao, saleRecordDao),
+                    new SaleRecordService(saleRecordDao));
+            controller.run();
+        } catch (RuntimeException e) {
+            String message = e.getMessage();
+            System.out.println("系统启动失败："
+                    + (message == null || message.isBlank() ? "未知错误" : message));
+        }
     }
 }

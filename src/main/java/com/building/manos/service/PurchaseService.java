@@ -4,6 +4,8 @@ import com.building.manos.config.DBConfig;
 import com.building.manos.dao.HouseDao;
 import com.building.manos.dao.SaleRecordDao;
 import com.building.manos.discount.DiscountStrategy;
+import com.building.manos.discount.PercentageDiscount;
+import com.building.manos.discount.ThresholdDiscount;
 import com.building.manos.model.House;
 import com.building.manos.model.HouseStatus;
 import com.building.manos.model.SaleRecord;
@@ -45,6 +47,40 @@ public class PurchaseService {
     }
 
     /**
+     * 预览指定房屋的折扣结果，不修改数据库。
+     *
+     * @param houseId 房屋编号
+     * @param discountChoice 折扣选项，1 为档位比例折扣，2 为档位满减
+     * @return 原价、折扣参数与实付金额组成的预览结果
+     * @throws IllegalArgumentException 参数不合法、房屋不存在或已售出时
+     * @throws IllegalStateException 数据库操作失败时
+     */
+    public PurchasePreview preview(String houseId, int discountChoice) {
+        House house = loadOnSaleHouse(houseId);
+        DiscountStrategy strategy = createStrategy(discountChoice);
+        BigDecimal finalPrice = strategy.apply(house.getTotalPrice());
+        return new PurchasePreview(
+                house.getTotalPrice(),
+                finalPrice,
+                strategy.getTypeName(),
+                strategy.getDiscountValue());
+    }
+
+    /**
+     * 按控制台折扣选项购买房屋并记录成交信息。
+     *
+     * @param houseId 房屋编号
+     * @param discountChoice 折扣选项，1 为档位比例折扣，2 为档位满减
+     * @param customerName 客户姓名
+     * @return 成交记录
+     * @throws IllegalArgumentException 参数不合法、房屋不存在或已售出时
+     * @throws IllegalStateException 数据库或事务失败时
+     */
+    public SaleRecord purchase(String houseId, int discountChoice, String customerName) {
+        return purchase(houseId, createStrategy(discountChoice), customerName);
+    }
+
+    /**
      * 购买指定房屋并记录成交信息。
      * <p>
      * 流程：校验在售 → 折扣计算 → 事务内更新房屋为 SOLD → 插入 sale_record。
@@ -63,18 +99,7 @@ public class PurchaseService {
         Objects.requireNonNull(strategy, "折扣策略不能为空");
         requireNonBlank(customerName, "客户姓名");
 
-        House house;
-        try {
-            house = houseDao.findById(houseId);
-        } catch (SQLException e) {
-            throw new IllegalStateException("数据库操作失败：" + e.getMessage(), e);
-        }
-        if (house == null) {
-            throw new IllegalArgumentException("房屋不存在：" + houseId);
-        }
-        if (house.getStatus() != HouseStatus.ON_SALE) {
-            throw new IllegalArgumentException("房屋已售出，无法购买");
-        }
+        House house = loadOnSaleHouse(houseId);
 
         BigDecimal originalPrice = house.getTotalPrice();
         BigDecimal finalPrice = strategy.apply(originalPrice);
@@ -116,6 +141,31 @@ public class PurchaseService {
             throw new IllegalStateException("数据库连接失败：" + e.getMessage(), e);
         }
         return record;
+    }
+
+    private House loadOnSaleHouse(String houseId) {
+        requireNonBlank(houseId, "房屋编号");
+        House house;
+        try {
+            house = houseDao.findById(houseId);
+        } catch (SQLException e) {
+            throw new IllegalStateException("数据库操作失败：" + e.getMessage(), e);
+        }
+        if (house == null) {
+            throw new IllegalArgumentException("房屋不存在：" + houseId);
+        }
+        if (house.getStatus() != HouseStatus.ON_SALE) {
+            throw new IllegalArgumentException("房屋已售出，无法购买");
+        }
+        return house;
+    }
+
+    private static DiscountStrategy createStrategy(int discountChoice) {
+        return switch (discountChoice) {
+            case 1 -> new PercentageDiscount();
+            case 2 -> new ThresholdDiscount();
+            default -> throw new IllegalArgumentException("无效的折扣类型：" + discountChoice);
+        };
     }
 
     private static void requireNonBlank(String value, String fieldName) {
