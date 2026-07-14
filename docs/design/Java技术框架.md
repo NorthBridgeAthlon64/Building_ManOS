@@ -9,7 +9,7 @@
 
 ## 0. 代码实现进度（2026-07-14）
 
-> 以仓库 `origin/main`（`22cfcfe` 及之后）为准；写报告请引用本表。  
+> 以仓库最新 `main` 为准（含 API/Vue、一键脚本、默认不灌库、去 Mock 文案）。写报告请引用本表与 [大作业报告.md](../report/大作业报告.md) v1.1。  
 > **说明**：老师已取消 PPT 答辩要求，答辩重点改为**文档 + 现场演示**。
 
 | 模块 | 类/文件 | 状态 | @author | 说明 |
@@ -24,7 +24,7 @@
 | **api** | `ServerMain`、`ApiServer`、各 Controller、`ApiResponse` | ✅ | 技术组 | Javalin REST；统一 `{code,message,data}` |
 | **frontend** | `frontend/` Vue 3 | ✅ | 技术组 | 经 `/api` 接真库，告别业务 Mock |
 | **sql** | `schema.sql` / `init-data.sql` | ✅ | — | `uk_sale_house`；演示楼盘/房屋/成交样例 |
-| **脚本** | `run_building_os`、`setup-db`、`run-api`、`run-web` | ✅ | — | 一键建库与双端联调 |
+| **脚本** | `run.ps1` / `run_building_os` / `run-cli` / `run_server.sh` | ✅ | — | 一键联调；默认不 `-InitDb`；Linux systemd |
 
 **当前结论**：
 
