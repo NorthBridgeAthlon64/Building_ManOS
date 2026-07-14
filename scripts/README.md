@@ -4,11 +4,13 @@
 
 | 脚本 | 说明 |
 |------|------|
-| **`run_building_os.cmd`** / `run_building_os.ps1` | **一键启动**：MySQL → 初始化库 → API + 前端 |
+| **`run_building_os.cmd`** / `run_building_os.ps1` | **一键启动**：MySQL → API + 前端（默认**不**清空数据库） |
 | `setup-db.ps1` | JDBC 执行 schema + init-data |
-| `run-api.ps1` | 启动 Javalin HTTP API（8080） |
-| `run-web.ps1` | 启动 Vue 前端（Vite 5173） |
-| `run.ps1` | 启动控制台菜单（cli） |
+| `run-api.ps1` | **API + 前端 + 开浏览器**；拉起/退出 MySQL（`-ApiOnly` / `-KeepMySql`） |
+| `run-web.ps1` | 仅启动 Vue 前端（Vite 5173） |
+| `mysql-lifecycle.ps1` | MySQL 启停公共函数（被上列脚本引用） |
+| **`run.ps1`** | **本机默认入口** → 等同 `run_building_os`（API+前端+开浏览器） |
+| `run-cli.ps1` | Windows 控制台菜单（不开浏览器） |
 | **`run_server.sh`** | **Linux 一键部署 API**（编译 + systemd 常驻） |
 | `run_cli.sh` | Linux：临时跑控制台菜单 |
 
@@ -25,9 +27,12 @@ powershell -File scripts/run_building_os.ps1
 可选参数：
 
 ```powershell
-powershell -File scripts/run_building_os.ps1 -SkipDbInit   # 不刷新演示数据
-powershell -File scripts/run_building_os.ps1 -NoBrowser    # 不自动打开浏览器
+powershell -File scripts/run_building_os.ps1              # 默认保留库中已有数据
+powershell -File scripts/run_building_os.ps1 -InitDb     # 危险：DELETE 后灌演示数据
+powershell -File scripts/run_building_os.ps1 -NoBrowser  # 不自动打开浏览器
 ```
+
+Java 后端日志在单独弹出的 **API** PowerShell 窗口中（非 `-q`，可见 Javalin/请求日志）。
 
 成功后访问 `http://127.0.0.1:5173/`。
 

@@ -13,7 +13,6 @@ import {
   Plus,
   ReceiptText,
   Search,
-  Sparkles,
   X,
 } from '@lucide/vue'
 
@@ -99,8 +98,8 @@ function quickCreate(target: 'building' | 'house') {
         <RouterLink to="/system" class="system-link" @click="closeSidebar">
           <Database :size="18" />
           <span>
-            <strong>Mock 数据源</strong>
-            <small>前端演示模式</small>
+            <strong>系统状态</strong>
+            <small>API / MySQL 联调</small>
           </span>
           <i />
         </RouterLink>
@@ -144,12 +143,6 @@ function quickCreate(target: 'building' | 'house') {
           </div>
         </div>
       </header>
-
-      <div class="prototype-banner">
-        <Sparkles :size="15" />
-        <strong>P0 CONCEPT PROTOTYPE</strong>
-        <span>当前所有数据与操作均为浏览器内 Mock 演示，不连接真实后端。</span>
-      </div>
 
       <main class="page-shell">
         <RouterView />

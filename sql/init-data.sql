@@ -1,4 +1,6 @@
--- 演示用初始数据（答辩前导入）
+-- 演示用初始数据（仅在需要重置时导入）
+-- 注意：会 DELETE 全表后再插入！本地一键脚本默认不再自动执行本文件。
+-- 强制灌库：powershell -File scripts/run_building_os.ps1 -InitDb
 -- 推荐演示用房：H202607130003（320万，在售，≥300万档位比例92折）
 USE building_manos;
 

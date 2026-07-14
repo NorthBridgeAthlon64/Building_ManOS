@@ -221,7 +221,7 @@ onMounted(async () => {
     </div>
 
     <div v-if="deleteTarget" class="modal-backdrop" @click.self="deleteTarget = null">
-      <div class="modal-card"><h3>删除在售房屋？</h3><p>将删除“{{ buildingName(deleteTarget.buildingId) }} · {{ deleteTarget.buildingNo }}栋 {{ deleteTarget.roomNo }}”。此操作只修改浏览器中的 Mock 数据。</p><div class="modal-actions"><button class="button" @click="deleteTarget = null">取消</button><button class="button button-danger" @click="confirmDelete">确认删除</button></div></div>
+      <div class="modal-card"><h3>删除在售房屋？</h3><p>将从数据库删除“{{ buildingName(deleteTarget.buildingId) }} · {{ deleteTarget.buildingNo }}栋 {{ deleteTarget.roomNo }}”。此操作不可恢复。</p><div class="modal-actions"><button class="button" @click="deleteTarget = null">取消</button><button class="button button-danger" @click="confirmDelete">确认删除</button></div></div>
     </div>
   </div>
 </template>

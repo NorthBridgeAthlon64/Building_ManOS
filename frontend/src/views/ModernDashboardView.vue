@@ -138,7 +138,7 @@ onMounted(async () => {
         <div class="metric-icon is-purple"><TrendingUp :size="19" /></div>
         <span>RECORDED VOLUME</span>
         <strong>{{ (salesTotal / 10_000).toFixed(0) }}<small>万元</small></strong>
-        <p>Mock 账本累计实付金额</p>
+        <p>成交记录累计实付金额</p>
       </article>
     </section>
 
@@ -184,7 +184,7 @@ onMounted(async () => {
           <i class="orbit-dot dot-two" />
         </div>
         <h3>资产流转保持活跃</h3>
-        <p>成交与库存信息都来自浏览器内 Mock 数据，可放心体验完整前端流程。</p>
+        <p>成交与库存数据来自 MySQL，经 Java API 实时同步。</p>
         <div class="momentum-facts">
           <span><strong>{{ state.sales.length }}</strong><small>成交记录</small></span>
           <span><strong>{{ Math.round((soldCount / state.houses.length) * 100) }}%</strong><small>去化比例</small></span>

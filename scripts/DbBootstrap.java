@@ -22,10 +22,10 @@ public class DbBootstrap {
         }
         Properties properties = loadProperties(Path.of("src/main/resources/database.properties"));
         Class.forName(properties.getProperty("driver", "com.mysql.cj.jdbc.Driver"));
-        try (Connection connection = DriverManager.getConnection(
-                properties.getProperty("url"),
-                properties.getProperty("user"),
-                properties.getProperty("password"))) {
+        String url = firstNonBlank(System.getenv("DB_URL"), properties.getProperty("url"));
+        String user = firstNonBlank(System.getenv("DB_USER"), properties.getProperty("user"));
+        String password = firstNonBlank(System.getenv("DB_PASSWORD"), properties.getProperty("password"));
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
             for (String arg : args) {
                 System.out.println(">>> 执行 " + arg);
                 executeScript(connection, Path.of(arg));
@@ -40,6 +40,13 @@ public class DbBootstrap {
             properties.load(input);
         }
         return properties;
+    }
+
+    private static String firstNonBlank(String preferred, String fallback) {
+        if (preferred != null && !preferred.isBlank()) {
+            return preferred.trim();
+        }
+        return fallback;
     }
 
     private static void executeScript(Connection connection, Path path) throws IOException, SQLException {

@@ -1,21 +1,24 @@
-# 编译并运行（Windows PowerShell）
+﻿# Default local entry: MySQL + API + frontend + open browser
+# Usage:
+#   ./scripts/run.ps1
+#   ./scripts/run.ps1 -InitDb        # wipe DB and load demo data (destructive)
+#   ./scripts/run.ps1 -NoBrowser
+# Console menu: ./scripts/run-cli.ps1
+param(
+    [switch]$InitDb,
+    [switch]$SkipDbInit,
+    [switch]$NoBrowser,
+    [switch]$KeepMySql
+)
+
 $ErrorActionPreference = "Stop"
-Set-Location $PSScriptRoot\..
+$here = $PSScriptRoot
+$argsList = @()
+if ($InitDb) { $argsList += "-InitDb" }
+if ($SkipDbInit) { $argsList += "-SkipDbInit" }
+if ($NoBrowser) { $argsList += "-NoBrowser" }
+if ($KeepMySql) { $argsList += "-KeepMySql" }
 
-function Resolve-Maven {
-    $cmd = Get-Command mvn -ErrorAction SilentlyContinue
-    if ($cmd) { return $cmd.Source }
-
-    $portable = Join-Path $PSScriptRoot "..\.tools\apache-maven-3.9.6\bin\mvn.cmd"
-    if (Test-Path $portable) { return (Resolve-Path $portable).Path }
-
-    throw "未找到 Maven。请安装 Maven 或将便携版解压到 .tools/apache-maven-3.9.6/"
-}
-
-$mvn = Resolve-Maven
-
-Write-Host ">>> mvn clean compile" -ForegroundColor Cyan
-& $mvn clean compile -q
-
-Write-Host ">>> mvn exec:java (控制台 cli)" -ForegroundColor Cyan
-& $mvn exec:java -q "-Dexec.mainClass=com.building.manos.Main"
+Write-Host "==> ./scripts/run.ps1 -> run_building_os (API + Web + browser)" -ForegroundColor Cyan
+Write-Host "    Java logs: watch the API PowerShell window" -ForegroundColor DarkGray
+& (Join-Path $here "run_building_os.ps1") @argsList

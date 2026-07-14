@@ -49,7 +49,7 @@ onMounted(async () => {
 <template>
   <div>
     <section class="page-intro">
-      <div><span class="eyebrow">SYSTEM STATUS</span><h2>前后端联调状态</h2><p>前端通过 HTTP API 访问 Java 服务与 MySQL，不再使用内存 Mock。</p></div>
+      <div><span class="eyebrow">SYSTEM STATUS</span><h2>系统运行状态</h2><p>前端经 HTTP API 访问 Java 服务，业务数据持久化在 MySQL。</p></div>
       <span class="status-badge" :class="health?.db === 'UP' ? 'status-on-sale' : 'status-mock'">
         <ShieldCheck :size="12" /> {{ health?.status ?? 'UNKNOWN' }}
       </span>
