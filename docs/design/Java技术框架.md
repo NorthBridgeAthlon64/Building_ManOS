@@ -1,33 +1,36 @@
 # Java 技术框架说明
 
-> **读者**：技术组、文档组、PPT 组  
-> **状态**：v0.6（同步 2026-07-13 cli / Main / init-data 完成）  
-> **关联**：[数据库设计.md](./数据库设计.md) | [开发A-数据层实施计划.md](../development/开发A-数据层实施计划.md) | [代码注释规范.md](./代码注释规范.md) | [sql/schema.sql](../../sql/schema.sql)
+> **读者**：技术组、文档组  
+> **状态**：v0.8（同步 2026-07-14：cli + Javalin API + Vue 接库）  
+> **关联**：[数据库设计.md](./数据库设计.md) | [API设计.md](./API设计.md) | [代码注释规范.md](./代码注释规范.md) | [sql/schema.sql](../../sql/schema.sql)  
+> **课程终稿报告**：[大作业报告.md](../report/大作业报告.md)
 
 ---
 
-## 0. 代码实现进度（2026-07-13）
+## 0. 代码实现进度（2026-07-14）
 
-> 以仓库 `origin/main`（`88ee539`）为准；写报告 / PPT 请引用本表。
+> 以仓库 `origin/main`（`22cfcfe` 及之后）为准；写报告请引用本表。  
+> **说明**：老师已取消 PPT 答辩要求，答辩重点改为**文档 + 现场演示**。
 
 | 模块 | 类/文件 | 状态 | @author | 说明 |
 |------|---------|------|---------|------|
-| **config** | `DBConfig` | ✅ | 陈辉 | `database.properties` / 环境变量；含 `DBConfigTest` |
+| **config** | `DBConfig`、`ServerConfig` | ✅ | 陈辉等 | JDBC / HTTP 服务配置 |
 | **model** | `Building`、`House`、`HouseStatus`、`SaleRecord` | ✅ | 陈辉 | 与三表字段映射 |
-| **dao** | `BuildingDao`、`HouseDao`、`SaleRecordDao` | ✅ | 陈辉 | PreparedStatement；事务重载 `insert(conn)` / `updateStatusSold(conn)`；含 DAO 测试 |
-| **util** | `IdGenerator` | ✅ | 陈辉 | B/H/S 前缀主键；含单元测试 |
+| **dao** | `BuildingDao`、`HouseDao`、`SaleRecordDao` | ✅ | 陈辉 | PreparedStatement；事务重载；含 DAO 测试 |
+| **util** | `IdGenerator` | ✅ | 陈辉 | B/H/S 前缀主键 |
 | **discount** | `DiscountStrategy`、`PriceTier`、`PercentageDiscount`、`ThresholdDiscount` | ✅ | 邓单 | 按原价三档；含 JUnit |
-| **service** | `BuildingService`、`HouseService`、`SearchService`、`PurchaseService`、`SaleRecordService` | ✅ | 邓单 | CRUD、5 种查询、购买 JDBC 事务、成交记录查询 |
-| **cli** | `MenuController`、`ConsoleUtils` | ✅ | 马玉 | 主菜单 5 项 + 子菜单，只调 service |
-| **Main** | `Main.java` | ✅ | 马玉 | 启动 `MenuController.run()` |
-| **sql** | `schema.sql` | ✅ | — | 含 `uk_sale_house`（一套房一条成交记录） |
-| **sql** | `init-data.sql` | ✅ | — | 2 楼盘、7 套房，含 ≥300 万在售演示样本 |
+| **service** | `Building/House/Search/Purchase/SaleRecord/DashboardService`、`PurchasePreview` | ✅ | 邓单 | CRUD、查询、购买事务、看板、预览 |
+| **cli** | `MenuController`、`ConsoleUtils`、`Main` | ✅ | 马玉 | 主菜单 5 项；`Main` 支持 cli/api |
+| **api** | `ServerMain`、`ApiServer`、各 Controller、`ApiResponse` | ✅ | 技术组 | Javalin REST；统一 `{code,message,data}` |
+| **frontend** | `frontend/` Vue 3 | ✅ | 技术组 | 经 `/api` 接真库，告别业务 Mock |
+| **sql** | `schema.sql` / `init-data.sql` | ✅ | — | `uk_sale_house`；演示楼盘/房屋/成交样例 |
+| **脚本** | `run_building_os`、`setup-db`、`run-api`、`run-web` | ✅ | — | 一键建库与双端联调 |
 
 **当前结论**：
 
-- **全栈已打通**：`cli` → `service` → `dao` → MySQL，可通过 `scripts/run.ps1` 答辩演示。
-- 演示路径：查在售 → 购买 `H202607130003`（320 万）档位比例 92 折 → 查已售 / 销售记录。
-- 购买事务：`PurchaseService` 使用 `HouseDao.updateStatusSold(Connection, …)` + `SaleRecordDao.insert(Connection, …)`。
+- **双表示层已打通**：`cli → service → dao → MySQL`；`Vue → api → service → dao → MySQL`。
+- 演示路径（cli 或 Web）：查在售 → 购买 `H202607130003`（≥300 万）档位比例 92 折 → 查成交。
+- 购买事务：`PurchaseService` 内 `updateStatusSold(conn)` + `insert(conn)` 同事务提交。
 
 ---
 
@@ -39,7 +42,8 @@
 | 构建 | Maven | `mvn compile` / `mvn exec:java` |
 | 数据库驱动 | mysql-connector-j 8.3 | JDBC 访问 MySQL |
 | 测试 | JUnit 5 | Service 层单元测试 |
-| 界面 | 控制台 | 禁止 GUI / Web |
+| 界面 | 控制台 cli + Vue（经 API） | 答辩保留 cli 兜底 |
+| HTTP | Javalin + Jackson | 见 [API设计.md](./API设计.md) |
 
 ---
 
@@ -48,17 +52,17 @@
 ### 2.1 总体结构
 
 ```
-┌──────────────────────────────────────────────────┐
-│  Main.java          程序入口，启动 MenuController   │
-├──────────────────────────────────────────────────┤
-│  cli（表示层）      菜单、输入、输出                │
-├──────────────────────────────────────────────────┤
-│  service（业务层）  规则校验、流程编排、折扣调用     │
-├──────────────────────────────────────────────────┤
-│  dao（数据访问层）  JDBC、SQL、ResultSet → model   │
-├──────────────────────────────────────────────────┤
-│  MySQL              building / house / sale_record │
-└──────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│  Main / ServerMain     cli 菜单入口 或 Javalin API 入口       │
+├────────────────────────────┬────────────────────────────────┤
+│  cli（控制台表示层）         │  api（HTTP 表示层）+ frontend  │
+├────────────────────────────┴────────────────────────────────┤
+│  service（业务层）     规则校验、流程编排、折扣、看板          │
+├─────────────────────────────────────────────────────────────┤
+│  dao（数据访问层）     JDBC、PreparedStatement、事务           │
+├─────────────────────────────────────────────────────────────┤
+│  MySQL                 building / house / sale_record         │
+└─────────────────────────────────────────────────────────────┘
 
 横切：model | config | discount | util
 ```
@@ -67,11 +71,12 @@
 
 | 规则 | 说明 |
 |------|------|
-| R1 | `cli` 只调用 `service`，禁止直接调用 `dao` |
+| R1 | `cli` / `api` 只调用 `service`，禁止直接调用 `dao` |
 | R2 | `service` 只调用 `dao` 和 `discount`，禁止拼 SQL |
 | R3 | `dao` 只做 CRUD 与查询映射，不做业务判断 |
 | R4 | `model` 为纯数据载体，不含业务逻辑 |
-| R5 | `config` 仅负责数据库连接，被 `dao` 使用 |
+| R5 | `config`：`DBConfig` 供 dao；`ServerConfig` 供 api |
+| R6 | `frontend` 只经 HTTP `/api` 访问，不直连 MySQL |
 
 ### 2.3 请求处理流程（以购房为例）
 
@@ -110,34 +115,16 @@ sequenceDiagram
 
 ```
 src/main/java/com/building/manos/
-├── Main.java
-├── config/
-│   └── DBConfig.java
-├── model/
-│   ├── Building.java
-│   ├── House.java
-│   ├── HouseStatus.java          # 枚举 ON_SALE / SOLD
-│   └── SaleRecord.java
-├── dao/
-│   ├── BuildingDao.java
-│   ├── HouseDao.java
-│   └── SaleRecordDao.java
-├── service/
-│   ├── BuildingService.java
-│   ├── HouseService.java
-│   ├── SearchService.java
-│   └── PurchaseService.java
-├── discount/
-│   ├── DiscountStrategy.java     # 接口
-│   ├── PriceTier.java            # 按原价档位划分（包内）
-│   ├── PercentageDiscount.java   # 档位比例折扣
-│   └── ThresholdDiscount.java    # 档位满减
-├── cli/
-│   ├── MenuController.java
-│   └── ConsoleUtils.java
-└── util/
-    ├── IdGenerator.java
-    └── Validator.java
+├── Main.java / ServerMain.java
+├── config/     DBConfig, ServerConfig
+├── model/      Building, House, HouseStatus, SaleRecord
+├── dao/        BuildingDao, HouseDao, SaleRecordDao
+├── service/    Building/House/Search/Purchase/SaleRecord/DashboardService, PurchasePreview
+├── discount/   DiscountStrategy, PriceTier, Percentage/ThresholdDiscount
+├── cli/        MenuController, ConsoleUtils
+├── api/        ApiServer, Controllers, ApiResponse, dto/*
+└── util/       IdGenerator
+frontend/       Vue 3 SPA（独立工程，经 /api 访问）
 ```
 
 ### 3.1 类职责一览
@@ -345,7 +332,7 @@ public final class ConsoleUtils {
 ### 10.1 运行时链路
 
 ```
-scripts/run.ps1（或 run.sh）
+scripts/run.ps1（Windows）/ run_server.sh（Linux API）
     → mvn compile + mvn exec:java
         → Main.main()
             → new MenuController().run()
@@ -361,7 +348,8 @@ scripts/run.ps1（或 run.sh）
 |------|------|
 | `scripts/run.ps1` | Windows：编译并启动 |
 | `scripts/setup-db.ps1` | Windows：JDBC 执行 schema + init-data |
-| `scripts/run.sh` | Linux/macOS：编译并启动 |
+| `scripts/run_server.sh` | Linux：一键编译并 systemd 常驻 API |
+| `scripts/run_cli.sh` | Linux：临时控制台菜单 |
 
 答辩前约定：
 
@@ -461,7 +449,7 @@ mysql -u root -p < sql/schema.sql
 
 # 推荐：一键脚本启动（答辩用）
 scripts/run.ps1        # Windows
-scripts/run.sh         # Linux/macOS
+scripts/run_server.sh  # Linux API 常驻
 
 # 或手动
 mvn clean compile
@@ -583,3 +571,4 @@ password=root
 | v0.5 | 2026-07-13 | §0 进度：数据层/业务层已完成；cli/Main/init-data 待办；对齐陈辉/邓单分工 |
 | v0.6 | 2026-07-13 | cli/Main/init-data/SaleRecordService 完成；系统可答辩演示 |
 | v0.7 | 2026-07-13 | 自检：Service 测试、PurchasePreview、setup-db.ps1、init-data 补 sale_record |
+| v0.8 | 2026-07-14 | 新增 api + Vue 接库、一键脚本；取消 PPT 答辩主材料；报告入口改《大作业报告》 |

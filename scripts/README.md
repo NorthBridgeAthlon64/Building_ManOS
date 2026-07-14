@@ -9,7 +9,8 @@
 | `run-api.ps1` | 启动 Javalin HTTP API（8080） |
 | `run-web.ps1` | 启动 Vue 前端（Vite 5173） |
 | `run.ps1` | 启动控制台菜单（cli） |
-| `run.sh` | Linux/macOS：控制台 |
+| **`run_server.sh`** | **Linux 一键部署 API**（编译 + systemd 常驻） |
+| `run_cli.sh` | Linux：临时跑控制台菜单 |
 
 ## 一键启动（推荐）
 
@@ -39,8 +40,28 @@ powershell -File scripts/run-web.ps1   # 终端 B
 ```
 
 
-穿透说明见 [docs/ops/内网穿透说明.md](../docs/ops/内网穿透说明.md)。
-API 契约见 [docs/design/API设计.md](../docs/design/API设计.md)。
+穿透说明见 [docs/ops/内网穿透说明.md](../docs/ops/内网穿透说明.md)。  
+API 契约见 [docs/design/API设计.md](../docs/design/API设计.md)。  
+Linux 常驻部署细则见 [docs/ops/Linux服务器部署.md](../docs/ops/Linux服务器部署.md)。
+
+## Linux 一键部署 API（服务器）
+
+先配置好 `database.properties`（推荐独立用户，勿依赖 `sudo mysql` 免密），再：
+
+```bash
+cd /home/admin/Building_ManOS
+chmod +x scripts/run_server.sh
+./scripts/run_server.sh
+```
+
+| 参数 | 含义 |
+|------|------|
+| （默认） | 编译 + 安装/重启 `building-manos-api` systemd |
+| `--fg` | 前台跑，不装 systemd |
+| `--with-web` | 额外构建前端 dist |
+| `--skip-build` | 不编译，只重启服务 |
+
+临时控制台：`./scripts/run_cli.sh`
 
 ## 测试
 
